@@ -3,6 +3,7 @@ package com.agueguen.clafout1s.game2048.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Insert
+import androidx.room.Delete
 import androidx.room.OnConflictStrategy
 
 @Dao
@@ -19,4 +20,10 @@ interface SaveStateDao {
 	 */
 	@Query("SELECT * FROM savestate WHERE id = :id")
 	fun get(id: Int): SaveState
+
+	/**
+	 * Delete the SaveState
+	 */
+	@Delete
+	fun delete(saveState: SaveState)
 }
