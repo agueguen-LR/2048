@@ -1,6 +1,5 @@
 package com.agueguen.clafout1s.game2048
 
-import GameBoard
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
