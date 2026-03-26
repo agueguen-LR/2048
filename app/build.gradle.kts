@@ -52,6 +52,12 @@ dependencies {
 	implementation(libs.androidx.compose.ui.graphics)
 	implementation(libs.androidx.compose.ui.tooling.preview)
 	implementation(libs.androidx.compose.material3)
+	implementation(libs.androidx.appcompat)
+	implementation(libs.material)
+	implementation(libs.androidx.activity)
+	implementation(libs.androidx.compose.foundation.layout)
+	implementation(libs.androidx.ui.graphics)
+	implementation(libs.androidx.compose.ui.text)
 	debugImplementation(libs.androidx.compose.ui.tooling)
 	debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
