@@ -9,7 +9,11 @@ package com.agueguen.clafout1s.game2048.utilities
  * @param stride The step size between elements in the view (default is 1 for contiguous access).
  */
 data class ByteView(val array: ByteArray, val offset: Int, val length: Int, val stride: Int = 1) {
-  operator fun get(i: Int): Byte {
-    return array[offset + i * stride]
+  operator fun get(index: Int): Byte {
+    return array[offset + index * stride]
   }
+
+	operator fun set(index: Int, value: Byte) {
+		array[offset + index * stride] = value
+	}
 }

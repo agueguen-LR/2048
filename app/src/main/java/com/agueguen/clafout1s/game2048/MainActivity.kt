@@ -10,9 +10,12 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      Log.i("MainActivity", "Starting")
+      Log.i("GAMEBOARD", "Starting")
       val gameBoard = GameBoard()
-      Log.i("MainActivity", gameBoard.toString())
+			for (i in (0..10)) {
+				Log.i("GAMEBOARD", gameBoard.toString()+"\n")
+				gameBoard.swipeLeft()
+			}
       // val db = AppDatabase.getDatabase(this)
       //
       // val saveStateDao = db.saveStateDao()

@@ -27,7 +27,7 @@ data class ByteGrid(val data: ByteArray, val width: Int, val height: Int) {
    */
   fun rows(): Sequence<ByteView> = sequence {
     for (row in 0 until height) {
-      yield(ByteView(data, row, width))
+      yield(ByteView(data, row * width, width))
     }
   }
 
@@ -45,8 +45,8 @@ data class ByteGrid(val data: ByteArray, val width: Int, val height: Int) {
 
 	override fun toString(): String {
 		return buildString {
-			for (row in 0 until height) {
-				for (col in 0 until width) {
+			for (row in 0..<height) {
+				for (col in 0..<width) {
 					append("%02X ".format(data[row * width + col]))
 				}
 				appendLine()
