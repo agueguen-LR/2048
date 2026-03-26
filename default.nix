@@ -1,6 +1,9 @@
 #`nix-shell -A shell` to enter shell
 #`nix-build -A emulate` to generate emulation script in ./result/bin/run-test-emulator
 # apk must be built beforehand, with `./gradlew assembleDebug` for example
+#`adb logcat --pid=$(adb shell pidof com.agueguen.clafout1s.game2048)` to enter logcat for this project
+#`adb -s emulator-<port> install app/build/outputs/apk/debug/app-debug.apk` to reinstall app without relaunching emulator
+# port is shown when launching the emulator
 let
   pkgs = import <nixpkgs> {
     config = {
