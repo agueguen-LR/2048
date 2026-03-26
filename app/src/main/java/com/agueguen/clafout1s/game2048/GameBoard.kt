@@ -38,56 +38,88 @@ class GameBoard {
 	private fun swipe(views: Sequence<ByteView>, viewLength: Int, reversed: Boolean = false): Boolean {
 		var store = ArrayDeque<Byte>()
 		var alreadyMergedFlag: Boolean
-		val scanForwardsRange = if (reversed) (viewLength - 1 downTo 0) else (0 until viewLength)
-		val scanBackwardsRange = if (reversed) (0 until viewLength) else (viewLength - 1 downTo 0)
+		val scanRange = if (reversed) (0 until viewLength) else (viewLength - 1 downTo 0)
 
 		for (view in views) {
 			alreadyMergedFlag = false
 
-
-			for (i in scanForwardsRange){
+			for (i in scanRange){
 				var currentByte = view[i]
 				if (currentByte == 0.toByte()) {
 					continue
 				} 
 
 				// merge consecutive tiles if previous tile wasn't already a merge
-				if (store.lastOrNull() == currentByte && !alreadyMergedFlag) {
-					store[store.lastIndex] = store[store.lastIndex].inc()
+				if (store.firstOrNull() == currentByte && !alreadyMergedFlag) {
+					store[0] = store[0].inc()
 					alreadyMergedFlag = true
 				} else {
-					store.addLast(currentByte)
+					store.addFirst(currentByte)
 					alreadyMergedFlag = false
 				}
 			}
 
 			// build new row state
-			for (i in scanBackwardsRange) {
+			for (i in scanRange) {
 				view[i] = store.removeLastOrNull() ?: 0
 			}
 		}
 		return createNewTile()
   }
-
+	
+	/**
+	 * Swipe left, merging consecutive tiles of the same value and shifting all tiles in the direction of the swipe.
+	 *
+	 * @return true if a new tile could be created, false if the board is full and the game is over.
+	 */
 	fun swipeLeft(): Boolean {
 		return swipe(board.rows(), board.width, false)
   }
 
+	/**
+	 * Swipe right, merging consecutive tiles of the same value and shifting all tiles in the direction of the swipe.
+	 *
+	 * @return true if a new tile could be created, false if the board is full and the game is over.
+	 */
 	fun swipeRight(): Boolean {
 		return swipe(board.rows(), board.width, true)
   }
 
+	/**
+	 * Swipe up, merging consecutive tiles of the same value and shifting all tiles in the direction of the swipe.
+	 *
+	 * @return true if a new tile could be created, false if the board is full and the game is over.
+	 */
 	fun swipeUp(): Boolean {
 		return swipe(board.columns(), board.height, true)
 	}
 
+	/**
+	 * Swipe down, merging consecutive tiles of the same value and shifting all tiles in the direction of the swipe.
+	 *
+	 * @return true if a new tile could be created, false if the board is full and the game is over.
+	 */
 	fun swipeDown(): Boolean {
 		return swipe(board.columns(), board.height, false)
 	}
 
+	/**
+	 * Returns the current state of the game board as a ByteArray
+	 *
+	 * @return A ByteArray representing the current state of the game board, where each byte corresponds to a tile value's power of two (0 for empty).
+	 */
   fun getGameState(): ByteArray {
     return board.data
   }
+
+	/**
+	 * Returns the current state of the game board as a ByteGrid.
+	 *
+	 * @return A ByteGrid representing the current state of the game board, where each byte corresponds to a tile value's power of two (0 for empty).
+	 */
+	fun getGameGrid(): ByteGrid {
+		return board
+	}
 
   override fun toString(): String {
     return board.toString()
