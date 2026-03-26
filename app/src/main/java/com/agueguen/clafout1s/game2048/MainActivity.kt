@@ -12,9 +12,15 @@ class MainActivity : ComponentActivity() {
     setContent {
       Log.i("GAMEBOARD", "Starting")
       val gameBoard = GameBoard()
-			for (i in (0..10)) {
+			for (i in (0..3)) {
 				Log.i("GAMEBOARD", gameBoard.toString()+"\n")
 				gameBoard.swipeLeft()
+				Log.i("GAMEBOARD", gameBoard.toString()+"\n")
+				gameBoard.swipeRight()
+				Log.i("GAMEBOARD", gameBoard.toString()+"\n")
+				gameBoard.swipeUp()
+				Log.i("GAMEBOARD", gameBoard.toString()+"\n")
+				gameBoard.swipeDown()
 			}
       // val db = AppDatabase.getDatabase(this)
       //

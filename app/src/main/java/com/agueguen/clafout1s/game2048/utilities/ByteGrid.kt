@@ -39,7 +39,7 @@ data class ByteGrid(val data: ByteArray, val width: Int, val height: Int) {
    */
   fun columns(): Sequence<ByteView> = sequence {
     for (col in 0 until width) {
-      yield(ByteView(data, col * height, height))
+      yield(ByteView(data, col, height, width))
     }
   }
 
