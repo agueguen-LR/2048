@@ -2,11 +2,8 @@ package com.agueguen.clafout1s.game2048
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,24 +21,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
+import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
 class MainMenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme{
+            AppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     Menu()
                 }
@@ -58,20 +51,21 @@ fun Menu() {
     val buttonModifiers = commonModifierBases.height(80.dp)
     val context = LocalContext.current
     val buttonColors = ButtonColors(
-        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.surfaceBright,
         MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.error,
-        MaterialTheme.colorScheme.errorContainer)
+        MaterialTheme.colorScheme.errorContainer,
+        MaterialTheme.colorScheme.error)
     Column (
-        modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize(),
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly
         ) {
         Text(
             text = "2048",
-            fontSize = 50.sp,
+            fontSize = 60.sp,
+            fontFamily = blockyFont,
             fontWeight = FontWeight.Bold,
             style = TextStyle(
-                brush = Brush.linearGradient(listOf(Color.White ,Color.Red))
+                brush = Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary))
             ),
             modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
             textAlign = TextAlign.Center,
@@ -84,21 +78,21 @@ fun Menu() {
                 modifier = buttonModifiers,
                 colors = buttonColors
             ) {
-                Text("START")
+                Text("START", fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
             }
             Button(
                 onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java))},
                 modifier = buttonModifiers,
                 colors = buttonColors
             ){
-                Text("SCOREBOARD")
+                Text("SCOREBOARD",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
             }
             Button(
                 onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java))},
                 modifier = buttonModifiers,
                 colors = buttonColors
             ){
-                Text("SETTINGS")
+                Text("SETTINGS",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
             }
         }
         Column(modifier = Modifier.weight(0.5F)) { }
@@ -109,7 +103,7 @@ fun Menu() {
 @Preview
 @Composable
 fun PreviewMenu(){
-    AppTheme{
+    AppTheme {
         Scaffold(modifier = Modifier.fillMaxSize().padding(10.dp)) {
             Menu()
         }
