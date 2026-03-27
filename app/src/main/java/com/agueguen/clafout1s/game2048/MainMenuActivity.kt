@@ -43,7 +43,8 @@ class MainMenuActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(modifier = Modifier.fillMaxSize()
+                    .padding(top = 50.dp, bottom = 20.dp)) {
                     Menu()
                 }
             }
@@ -70,13 +71,15 @@ class MainMenuActivity : ComponentActivity() {
         for (i in 0..<50){
             scoreDao.save(
                 score = Random.nextLong(1, 10),
-                highestTile = two.pow(Random.nextDouble(1.0,6.0)).toLong(),
+                highestTile = two.pow(Random.nextInt(1,6)).toLong(),
                 timeTaken = Random.nextLong(5,25),
                 movesTaken = Random.nextLong(1,10),
                 boardHeight = Random.nextInt(3,10),
                 boardLength = Random.nextInt(3,10)
             )
         }
+        // Pour prouver que la liste descend bien jusqu'à la dernière valeur
+        scoreDao.save(0,999,2,2,5,5)
 
         //Log.i("MainActivity", scoreDao.getAll().toString())
     }

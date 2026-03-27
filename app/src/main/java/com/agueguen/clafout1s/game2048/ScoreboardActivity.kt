@@ -50,7 +50,7 @@ class ScoreboardActivity : ComponentActivity() {
             AppTheme {
                 Scaffold(modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 50.dp)) {
+                    .padding(top = 50.dp, bottom = 20.dp)) {
                     Scoreboard()
                 }
             }
@@ -78,10 +78,12 @@ class ScoreboardActivity : ComponentActivity() {
                 ) {
                     items(6) {
                         index->Column(modifier = Modifier.padding(horizontal = 10.dp)){
-                            Text(getScoreValue(index, null), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text(getScoreValue(index, null), fontSize = 20.sp, fontWeight = FontWeight.Bold,
+                                color=MaterialTheme.colorScheme.onPrimaryContainer)
                             HorizontalDivider(thickness = 20.dp)
                             allScores.forEach { score ->
-                                Text(getScoreValue(index,score), fontSize = 18.sp)
+                                Text(getScoreValue(index,score), fontSize = 18.sp,
+                                    color=MaterialTheme.colorScheme.primary)
                                 HorizontalDivider(thickness = 10.dp)
                             }
                     }
