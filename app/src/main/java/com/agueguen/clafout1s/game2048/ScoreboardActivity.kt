@@ -7,106 +7,95 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.Score
+import com.agueguen.clafout1s.game2048.database.ScoreDao
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
+import com.agueguen.clafout1s.game2048.utilities.formatUnixTime
+import com.agueguen.clafout1s.game2048.utilities.powerToBase
+import com.agueguen.clafout1s.game2048.utilities.powerToBase
 
 class ScoreboardActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Scaffold(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 50.dp, bottom = 20.dp)) {
-                    Scoreboard()
-                }
-            }
-        }
-    }
+	private lateinit var scoreDao: ScoreDao
 
-    @Composable
-    fun Scoreboard(){
-        val context = LocalContext.current
-        val db = AppDatabase.getDatabase(context)
-        val scoreDao = db.scoreDao()
-        val allScores = scoreDao.getAll()
-        LazyColumn(
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            item(){
-                Row(horizontalArrangement = Arrangement.Center, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)){
-                    Text("Scoreboard", color = MaterialTheme.colorScheme.secondary, fontSize = 30.sp)
-                }
-            }
-            item(){
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    items(5) {
-                        index->Column(modifier = Modifier.padding(horizontal = 10.dp)){
-                            Text(getScoreValue(index, null), fontSize = 20.sp, fontWeight = FontWeight.Bold,
-                                color=MaterialTheme.colorScheme.onPrimaryContainer)
-                            HorizontalDivider(thickness = 20.dp)
-                            allScores.forEach { score ->
-                                Text(getScoreValue(index,score), fontSize = 18.sp,
-                                    color=MaterialTheme.colorScheme.primary)
-                                HorizontalDivider(thickness = 10.dp)
-                            }
-                    }
-                        VerticalDivider(thickness = 10.dp, color = DividerDefaults.color)
-                    }
-                }
-            }
-        }
-    }
+	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+	override fun onCreate(savedInstanceState: Bundle?) {
+		val db = AppDatabase.getDatabase(this)
+		scoreDao = db.scoreDao()
 
-    fun getScoreValue(i: Int,scoreData: Score?): String {
+		super.onCreate(savedInstanceState)
+		setContent {
+			AppTheme {
+				Scaffold(modifier = Modifier
+				.fillMaxSize()
+				.padding(top = 50.dp, bottom = 20.dp)) {
+					Scoreboard()
+				}
+			}
+		}
+	}
 
-        if(i==0) {
-            if(scoreData==null) return "Score"
-            return scoreData.score.toString()
-        }
-        else if(i==1) {
-            if(scoreData==null) return "Highest tile"
-            return scoreData.highestTile.toString()
-        }
-        else if(i==2) {
-            if(scoreData==null) return "Time taken"
-            return scoreData.timeTaken.toString()
-        }
-        else if(i==3) {
-            if(scoreData==null) return "Number of moves"
-            return scoreData.movesTaken.toString()
-        }
-        else if(i==4) {
-            if(scoreData==null) return "Board size"
-            return scoreData.boardLength.toString()+"x"+scoreData.boardHeight.toString()
-        }
-        return "?"
-    }
+	@Composable
+	private fun Scoreboard(){
+		val allScores = scoreDao.getAll()
+		LazyColumn(
+			modifier = Modifier.fillMaxHeight()
+		) {
+			item(){
+				Row(horizontalArrangement = Arrangement.Center, modifier = Modifier
+				.fillMaxWidth()
+				.padding(20.dp)){
+					Text("Scoreboard", color = MaterialTheme.colorScheme.secondary, fontSize = 30.sp)
+				}
+			}
+			items(allScores) { score ->
+				ScoreCard(score)
+			}
+		}
+	}
+
+	@Composable
+	private fun ScoreCard(score: Score) {
+		Card(
+			modifier = Modifier
+			.fillMaxWidth()
+			.padding(vertical = 6.dp)
+		) {
+			Column(
+				modifier = Modifier.padding(12.dp)
+			) {
+				Text(
+					text = "Score: ${score.score}",
+					fontSize = 20.sp,
+					fontWeight = FontWeight.Bold
+				)
+
+				Spacer(modifier = Modifier.height(6.dp))
+
+				Text("Time Taken: ${score.timeTaken}")
+				Text("Highest tile reached: ${powerToBase(score.highestTile)}")
+				Text("Moves used: ${score.movesTaken}")
+				Text("Board Format: ${score.boardLength}x${score.boardHeight}")
+				Text("Date: ${formatUnixTime(score.date)}")
+			}
+		}
+	}
 }
-
 

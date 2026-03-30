@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,9 +34,6 @@ import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 import kotlin.random.Random
-import kotlin.math.pow
-import kotlin.random.nextInt
-import kotlin.random.nextLong
 
 class MainMenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,23 +61,16 @@ class MainMenuActivity : ComponentActivity() {
 
         val scoreDao = db.scoreDao()
         scoreDao.reinitializeAll()
-        scoreDao.save(4, 4, 12, 1, 4, 4)
-        scoreDao.save(8, 8, 15, 2, 4, 4)
-        scoreDao.save(6, 8, 18, 3, 4, 4)
-        val two = 2.0
         for (i in 0..<50){
             scoreDao.save(
-                score = Random.nextLong(1, 10),
-                highestTile = two.pow(Random.nextInt(1,6)).toLong(),
+                score = Random.nextLong(1, 1000),
+                highestTile = Random.nextInt(1,16).toByte(),
                 timeTaken = Random.nextLong(5,25),
                 movesTaken = Random.nextLong(1,10),
                 boardHeight = Random.nextInt(3,10),
                 boardLength = Random.nextInt(3,10)
             )
         }
-        // Pour prouver que la liste descend bien jusqu'à la dernière valeur
-        scoreDao.save(0,999,2,2,5,5)
-
         //Log.i("MainActivity", scoreDao.getAll().toString())
     }
 }
