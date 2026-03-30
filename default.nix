@@ -46,6 +46,6 @@ in {
     abiVersion = "x86_64";
     app = ./app/build/outputs/apk/debug/app-debug.apk;
     package = "com.agueguen.clafout1s.game2048";
-    activity = "MainActivity";
+    activity = "MainMenuActivity";
   };
 }

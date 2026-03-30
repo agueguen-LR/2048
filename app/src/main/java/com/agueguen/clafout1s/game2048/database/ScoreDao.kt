@@ -21,14 +21,14 @@ interface ScoreDao {
 	)
 	""")
 	fun save(
-		score: Long, highestTile: Long, timeTaken: Long,
+		score: Long, highestTile: Byte, timeTaken: Long,
 		movesTaken: Long, boardHeight: Int, boardLength: Int
 	)
 
 	/**
 	 * Get all saved scores, ordered by total score descending
 	 */
-	@Query("SELECT * FROM Score ORDER BY score DESC")
+	@Query("SELECT * FROM Score ORDER BY score DESC, timeTaken ASC")
 	fun getAll(): List<Score>
 
 	/**
