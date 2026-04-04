@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [SaveState::class, Score::class], version = 1, exportSchema = false)
+@Database(entities = [SaveState::class, Score::class, UserSettings::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 	abstract fun saveStateDao(): SaveStateDao
 	abstract fun scoreDao(): ScoreDao
+	abstract fun userSettingsDao(): UserSettingsDao
 
 	companion object {
 		private var INSTANCE: AppDatabase? = null
@@ -21,6 +22,13 @@ abstract class AppDatabase : RoomDatabase() {
 						AppDatabase::class.java,
 						"app_database"
 					).allowMainThreadQueries().build()
+					
+					// Initialise default UserSettings
+					val dao = INSTANCE!!.userSettingsDao()
+					// If you get a warning here that this is always false, ignore it, it isn't
+					if (dao.getUserSettings() == null) {
+						dao.insert(UserSettings())
+					}
 				}
 			}
 			return INSTANCE!!

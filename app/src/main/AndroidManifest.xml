@@ -12,6 +12,9 @@
             android:name=".SwapTestActivity"
             android:exported="false"/>
         <activity
+            android:name=".SettingsActivity"
+            android:exported="false"/>
+        <activity
             android:name=".MainMenuActivity"
             android:exported="true">
             <intent-filter>
