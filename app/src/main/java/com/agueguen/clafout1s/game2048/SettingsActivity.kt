@@ -49,7 +49,7 @@ class SettingsActivity : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
 		setContent {
-			theme = remember { mutableStateOf(userSettingsDao.getUserSettings().theme) }
+			theme = remember { mutableStateOf(userSettingsDao.getUserSettings()!!.theme) }
 			AppTheme(theme.value) {
 				Scaffold(modifier = Modifier.fillMaxSize()) {
 					Settings()
@@ -60,8 +60,13 @@ class SettingsActivity : ComponentActivity() {
 
 	@Composable
 	fun Settings() {
-		var userSettings = remember { mutableStateOf(userSettingsDao.getUserSettings()) }
-		val buttonModifiers = Modifier.padding(15.dp).fillMaxWidth().height(40.dp)
+		val userSettingsState = remember { mutableStateOf(userSettingsDao.getUserSettings()) }
+		val userSettings = userSettingsState.value!!
+
+		val buttonModifiers = Modifier
+		.padding(15.dp)
+		.fillMaxWidth()
+		.height(40.dp)
 
 		Column(
 			modifier = Modifier
@@ -69,16 +74,20 @@ class SettingsActivity : ComponentActivity() {
 			.fillMaxSize(),
 			verticalArrangement = Arrangement.SpaceEvenly
 		) {
+			// Header
 			Text(
 				text = "Settings",
 				fontSize = 50.sp,
 				fontWeight = FontWeight.Bold,
-				modifier = Modifier.padding(15.dp).fillMaxWidth()
+				modifier = Modifier
+				.padding(15.dp)
+				.fillMaxWidth()
 				.weight(1f)
 				.wrapContentHeight(align = Alignment.CenterVertically),
 				textAlign = TextAlign.Center
 			)
 
+			// Settings buttons and ThemePicker
 			Column(
 				verticalArrangement = Arrangement.SpaceEvenly,
 				modifier = Modifier.weight(2f)
@@ -86,14 +95,14 @@ class SettingsActivity : ComponentActivity() {
 				// Animations toggle
 				Button(
 					onClick = {
-						val updated = userSettings.value.copy(animations = !userSettings.value.animations)
-						userSettings.value = updated
+						val updated = userSettings.copy(animations = !userSettings.animations)
+						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
 					},
 					modifier = buttonModifiers
 				) {
 					Text(
-						text = "Animations: ${if (userSettings.value.animations) "On" else "Off"}",
+						text = "Animations: ${if (userSettings.animations) "On" else "Off"}",
 						fontWeight = FontWeight.Light,
 						fontSize = 20.sp
 					)
@@ -102,30 +111,30 @@ class SettingsActivity : ComponentActivity() {
 				// Music toggle
 				Button(
 					onClick = {
-						val updated = userSettings.value.copy(music = !userSettings.value.music)
-						userSettings.value = updated
+						val updated = userSettings.copy(music = !userSettings.music)
+						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
 					},
 					modifier = buttonModifiers
 				) {
 					Text(
-						text = "Music: ${if (userSettings.value.music) "On" else "Off"}",
+						text = "Music: ${if (userSettings.music) "On" else "Off"}",
 						fontWeight = FontWeight.Light,
 						fontSize = 20.sp
 					)
 				}
 
-				// SoundFX toggle
+				// Sound FX toggle
 				Button(
 					onClick = {
-						val updated = userSettings.value.copy(soundFX = !userSettings.value.soundFX)
-						userSettings.value = updated
+						val updated = userSettings.copy(soundFX = !userSettings.soundFX)
+						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
 					},
 					modifier = buttonModifiers
 				) {
 					Text(
-						text = "Sound FX: ${if (userSettings.value.soundFX) "On" else "Off"}",
+						text = "Sound FX: ${if (userSettings.soundFX) "On" else "Off"}",
 						fontWeight = FontWeight.Light,
 						fontSize = 20.sp
 					)
@@ -134,20 +143,21 @@ class SettingsActivity : ComponentActivity() {
 				// Optional features toggle
 				Button(
 					onClick = {
-						val updated = userSettings.value.copy(optionalFeatures = !userSettings.value.optionalFeatures)
-						userSettings.value = updated
+						val updated = userSettings.copy(optionalFeatures = !userSettings.optionalFeatures)
+						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
 					},
 					modifier = buttonModifiers
 				) {
 					Text(
-						text = "Optional Features: ${if (userSettings.value.optionalFeatures) "On" else "Off"}",
+						text = "Optional Features: ${if (userSettings.optionalFeatures) "On" else "Off"}",
 						fontWeight = FontWeight.Light,
 						fontSize = 20.sp
 					)
 				}
 
-				ThemePicker(userSettings)
+				// Theme picker
+				ThemePicker(userSettingsState)
 			}
 
 			Column(modifier = Modifier.weight(0.5f)) {}
@@ -155,10 +165,10 @@ class SettingsActivity : ComponentActivity() {
 	}
 
 	@Composable
-	fun ThemePicker(userSettings: MutableState<UserSettings>) {
-		val outlineColor = MaterialTheme.colorScheme.secondary // visible on any background
+	fun ThemePicker(userSettingsState: MutableState<UserSettings?>) {
+		val userSettings = userSettingsState.value!!
+		val outlineColor = MaterialTheme.colorScheme.secondary
 
-		// List of themes: Pair<primaryColor, backgroundColor>
 		val themes = listOf(
 			lightScheme.primary to lightScheme.background,
 			darkScheme.primary to darkScheme.background
@@ -170,25 +180,23 @@ class SettingsActivity : ComponentActivity() {
 			modifier = Modifier.padding(16.dp)
 		) {
 			themes.forEachIndexed { index, (primary, background) ->
-
 				Box(
 					modifier = Modifier
 					.size(50.dp)
 					.background(background, CircleShape)
 					.border(
-						width = if (userSettings.value.theme == index) 3.dp else 0.dp,
+						width = if (userSettings.theme == index) 3.dp else 0.dp,
 						color = outlineColor,
 						shape = CircleShape
 					)
 					.clickable {
-						val updated = userSettings.value.copy(theme = index)
-						userSettings.value = updated
+						val updated = userSettings.copy(theme = index)
+						userSettingsState.value = updated
 						theme.value = index
 						userSettingsDao.insert(updated)
 					},
 					contentAlignment = Alignment.Center
 				) {
-					// Inner circle
 					Box(
 						modifier = Modifier
 						.size(25.dp)

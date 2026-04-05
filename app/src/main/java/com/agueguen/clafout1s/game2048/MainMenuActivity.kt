@@ -31,17 +31,26 @@ import androidx.compose.ui.unit.sp
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 import com.agueguen.clafout1s.game2048.database.AppDatabase
+import com.agueguen.clafout1s.game2048.database.UserSettings
 
 class MainMenuActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+
+		val userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
+		var settings = userSettingsDao.getUserSettings()
+		if (settings == null) {
+			settings = UserSettings()
+			userSettingsDao.insert(settings)
+		}
 		setContent {
-			AppTheme(AppDatabase.getDatabase(this).userSettingsDao().getUserSettings().theme) {
+			AppTheme(settings.theme) {
 				Scaffold(modifier = Modifier.fillMaxSize()) {
 					Menu()
 				}
 			}
 		}
+
 	}
 
 	// TODO: Change the connexions of the buttons to their actual activities

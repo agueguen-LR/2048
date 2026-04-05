@@ -9,8 +9,8 @@ import androidx.room.OnConflictStrategy
 @Dao
 interface UserSettingsDao {
 
-    @Query("SELECT * FROM UserSettings WHERE id = 0 LIMIT 1")
-    fun getUserSettings(): UserSettings
+    @Query("SELECT * FROM UserSettings WHERE id = 0")
+    fun getUserSettings(): UserSettings?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(settings: UserSettings)

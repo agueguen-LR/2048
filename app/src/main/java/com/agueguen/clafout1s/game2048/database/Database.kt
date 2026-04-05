@@ -22,13 +22,6 @@ abstract class AppDatabase : RoomDatabase() {
 						AppDatabase::class.java,
 						"app_database"
 					).allowMainThreadQueries().build()
-					
-					// Initialise default UserSettings
-					val dao = INSTANCE!!.userSettingsDao()
-					// If you get a warning here that this is always false, ignore it, it isn't
-					if (dao.getUserSettings() == null) {
-						dao.insert(UserSettings())
-					}
 				}
 			}
 			return INSTANCE!!
