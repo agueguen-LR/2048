@@ -1,5 +1,6 @@
 package com.agueguen.clafout1s.game2048
 
+import android.util.Log
 import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.utilities.ByteView
 import com.agueguen.clafout1s.game2048.utilities.ByteGrid
@@ -64,7 +65,7 @@ class GameBoard {
 				view[i] = store.removeLastOrNull() ?: 0
 			}
 		}
-		return createNewTile()
+		return true//createNewTile()
   }
 	
 	/**
@@ -91,7 +92,13 @@ class GameBoard {
 	 * @return true if a new tile could be created, false if the board is full and the game is over.
 	 */
 	fun swipeUp(): Boolean {
-		return swipe(board.columns(), board.height, true)
+        val columns = board.columns()
+        var sentence = ""
+        for (col in columns){
+            sentence+= "$col; "
+        }
+        Log.d("Swipe",sentence)
+		return swipe(columns, board.height, true)
 	}
 
 	/**

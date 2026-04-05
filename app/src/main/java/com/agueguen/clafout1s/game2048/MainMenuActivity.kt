@@ -74,7 +74,7 @@ fun Menu() {
             modifier = Modifier.weight(2F)
         ) {
             Button(
-                onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java)) },
+                onClick = { context.startActivity(Intent(context, GameActivity::class.java)) },
                 modifier = buttonModifiers,
                 colors = buttonColors
             ) {
