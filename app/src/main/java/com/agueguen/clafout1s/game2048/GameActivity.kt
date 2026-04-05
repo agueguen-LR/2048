@@ -16,7 +16,7 @@ class GameActivity : ComponentActivity() {
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		val gameBoard = GameBoard(3,3)
+		val gameBoard = GameBoard(2,2)
         val gameInterface = GameInterface(gameBoard)
 		setContent{
 			AppTheme() {
