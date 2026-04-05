@@ -24,15 +24,14 @@ class GameBoard {
   }
 
   private fun createNewTile(): Boolean {
-    val boardState: ByteArray = board.data
     val emptyTiles = ArrayList<Int>()
-		for (i in 0..<boardState.size) {
-			if (boardState[i] == 0.toByte()){
+		for (i in 0..<board.data.size) {
+			if (board.data[i] == 0.toByte()){
 				emptyTiles.add(i)
 			}
 		}
     if (emptyTiles.isEmpty()) return false // Game over
-    boardState[emptyTiles.random()] = listOf(1, 1, 1, 2).random().toByte()
+    board.data[emptyTiles.random()] = listOf(1, 1, 1, 2).random().toByte()
     return true
   }
 
@@ -65,7 +64,7 @@ class GameBoard {
 				view[i] = store.removeLastOrNull() ?: 0
 			}
 		}
-		return true//createNewTile()
+		return createNewTile()
   }
 	
 	/**
@@ -92,13 +91,7 @@ class GameBoard {
 	 * @return true if a new tile could be created, false if the board is full and the game is over.
 	 */
 	fun swipeUp(): Boolean {
-        val columns = board.columns()
-        var sentence = ""
-        for (col in columns){
-            sentence+= "$col; "
-        }
-        Log.d("Swipe",sentence)
-		return swipe(columns, board.height, true)
+		return swipe(board.columns(), board.height, true)
 	}
 
 	/**
@@ -109,15 +102,6 @@ class GameBoard {
 	fun swipeDown(): Boolean {
 		return swipe(board.columns(), board.height, false)
 	}
-
-	/**
-	 * Returns the current state of the game board as a ByteArray
-	 *
-	 * @return A ByteArray representing the current state of the game board, where each byte corresponds to a tile value's power of two (0 for empty).
-	 */
-  fun getGameState(): ByteArray {
-    return board.data
-  }
 
 	/**
 	 * Returns the current state of the game board as a ByteGrid.

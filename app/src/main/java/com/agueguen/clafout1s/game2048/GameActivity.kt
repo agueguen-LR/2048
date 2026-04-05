@@ -50,11 +50,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -75,68 +73,69 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
+import com.agueguen.clafout1s.game2048.utilities.powerToBase
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.pow
 
 class GameActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val gameBoard = GameBoard()
-        Log.d("Board",gameBoard.toString())
-        gameBoard.swipeLeft()
-        Log.d("Board",gameBoard.toString())
-        gameBoard.swipeRight()
-        Log.d("Board",gameBoard.toString())
-        gameBoard.swipeUp()
-        Log.d("Board",gameBoard.toString())
-        gameBoard.swipeDown()
-        Log.d("Board",gameBoard.toString())
-        setContent{
-            AppTheme() {
-                Scaffold(modifier = Modifier
-                    .fillMaxSize()
-                    .focusable()
-                    .padding(top = 50.dp, bottom = 20.dp)) {
-                    GameBoardAlt(gameBoard)
-                }
-            }
-        }
+	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		val gameBoard = GameBoard()
+		Log.d("2048GAME",gameBoard.toString())
+		gameBoard.swipeLeft()
+		// Log.d("2048GAME",gameBoard.toString())
+		// gameBoard.swipeRight()
+		// Log.d("2048GAME",gameBoard.toString())
+		// gameBoard.swipeUp()
+		// Log.d("2048GAME",gameBoard.toString())
+		// gameBoard.swipeDown()
+		// Log.d("2048GAME",gameBoard.toString())
+		setContent{
+			AppTheme() {
+				Scaffold(modifier = Modifier
+				.fillMaxSize()
+				.focusable()
+				.padding(top = 50.dp, bottom = 20.dp)) {
+					GameBoardAlt(gameBoard)
+				}
+			}
+		}
 
-    }
+	}
 }
 
 @Composable
 fun GameBoardLayout(gameBoard: GameBoard){
-    val tile_width = 50.dp
-    val tile_height = 50.dp
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(50.dp),
-        verticalArrangement = Arrangement.Center
-    ){
-        for (y in 0 until gameBoard.getGameGrid().height) {
-            Row(
-                modifier = Modifier.height(tile_height).
-                border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary)),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                for (x in 0 until gameBoard.getGameGrid().width){
-                    Text(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(tile_width)
-                            .border(BorderStroke(2.dp, MaterialTheme.colorScheme.secondary)),
-                        text = x.toString() + " " + y.toString(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-    }
+	val tile_width = 50.dp
+	val tile_height = 50.dp
+	Column(
+		modifier = Modifier
+		.fillMaxHeight()
+		.padding(50.dp),
+		verticalArrangement = Arrangement.Center
+	){
+		for (y in 0 until gameBoard.getGameGrid().height) {
+			Row(
+				modifier = Modifier.height(tile_height).
+				border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary)),
+				horizontalArrangement = Arrangement.Center
+			) {
+				for (x in 0 until gameBoard.getGameGrid().width){
+					Text(
+						modifier = Modifier
+						.fillMaxHeight()
+						.width(tile_width)
+						.border(BorderStroke(2.dp, MaterialTheme.colorScheme.secondary)),
+						text = x.toString() + " " + y.toString(),
+						textAlign = TextAlign.Center
+					)
+				}
+			}
+		}
+	}
 }
 
 
@@ -145,163 +144,140 @@ enum class DragValue { Start, End }
 
 @Composable
 fun AnchoredDraggableBox() {
-    val anchors = DraggableAnchors<DragValue> {
-        DragValue.Start at 100.dp.value
-        DragValue.End at 500.dp.value
-    }
-    val state = remember {
-        AnchoredDraggableState(
-            initialValue = DragValue.Start,
-            anchors = anchors,
-            )
-            .apply {
-                updateAnchors(anchors)
-            }
-    }
-    Box(
-        modifier = Modifier.anchoredDraggable(
-            state = state,
-            orientation = Orientation.Horizontal,
-            flingBehavior = flingBehavior(
-                state = state,
-                positionalThreshold = { distance: Float -> 0f },
-                animationSpec = tween()
-            )
-        ),
-    ) {
-        Text(
-            text = "Truc",
-            modifier = Modifier
-                .size(80.dp)
-                .offset {
-                    IntOffset(
-                        x = state.requireOffset().roundToInt(),
-                        y = 0
-                    )
-                }
-                .anchoredDraggable(state, Orientation.Horizontal),
-        )
-    }
+	val anchors = DraggableAnchors<DragValue> {
+		DragValue.Start at 100.dp.value
+		DragValue.End at 500.dp.value
+	}
+	val state = remember {
+		AnchoredDraggableState(
+			initialValue = DragValue.Start,
+			anchors = anchors,
+		)
+		.apply {
+			updateAnchors(anchors)
+		}
+	}
+	Box(
+		modifier = Modifier.anchoredDraggable(
+			state = state,
+			orientation = Orientation.Horizontal,
+			flingBehavior = flingBehavior(
+				state = state,
+				positionalThreshold = { distance: Float -> 0f },
+				animationSpec = tween()
+			)
+		),
+	) {
+		Text(
+			text = "Truc",
+			modifier = Modifier
+			.size(80.dp)
+			.offset {
+				IntOffset(
+					x = state.requireOffset().roundToInt(),
+					y = 0
+				)
+			}
+			.anchoredDraggable(state, Orientation.Horizontal),
+		)
+	}
 }
 
 fun printTileList(tileList: SnapshotStateList<Array<Int>>){
-    var message = ""
-    for (rows in tileList){
-        for(ele in rows){
-            message+= " $ele"
-        }
-        message += "\n"
-    }
-    Log.d("TileList",message)
+	var message = ""
+	for (rows in tileList){
+		for(ele in rows){
+			message+= " $ele"
+		}
+		message += "\n"
+	}
+	Log.d("2048GAME",message)
 }
 
 @Composable
 fun GameBoardAlt(gameBoard: GameBoard){
-    val tileWidth:Dp = 80.dp
-    val tileHeight:Dp = 80.dp
-    var tilesContentArray = remember { mutableStateListOf<Array<Int>>()}
+	val tileWidth:Dp = 80.dp
+	val tileHeight:Dp = 80.dp
+	var gameGrid = gameBoard.getGameGrid()
 
-    for (y in 0..<gameBoard.getGameGrid().height){
-        for(x in 0..<gameBoard.getGameGrid().width){
-            if(x == 0){
-                tilesContentArray.add(Array<Int>(gameBoard.getGameGrid().width){0})
-            }
-            tilesContentArray[y][x] = gameBoard.getGameGrid()[x, y].toInt()
-        }
-    }
-    Column(
-        modifier = Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ){
-            LazyHorizontalGrid(
-                rows = GridCells.Fixed(4),
-                horizontalArrangement = Arrangement.Center,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.height(tileHeight*4)
-                    .width(tileWidth*4)
-                    .border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
-            ) {
-                items(4*4){ i->
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
-                            .width(tileWidth)
-                            .height(tileHeight)
-                            .pointerInput(Unit) {
-                                var dragEnded = true
-                                detectDragGestures(
-                                    onDragStart = {
-                                        Log.d("Drag","Drag start")
-                                        dragEnded = false
-                                    },
-                                    onDragEnd = {
-                                        dragEnded = true
-                                    }
-                                ) { change, dragAmount ->
-                                    Log.d("Drag", "Drag detected, amount $dragAmount")
-                                    if (!dragEnded){
-                                        var tilesChanged: Boolean = false
-                                        val dragDetectionMin = 20
-                                        var horizontalMove = false
-                                        if(abs(dragAmount.x)>abs(dragAmount.y)) horizontalMove = true
+	Column(
+		modifier = Modifier.fillMaxHeight(),
+		verticalArrangement = Arrangement.Center
+	) {
+		Row(
+			modifier = Modifier.fillMaxWidth(),
+			horizontalArrangement = Arrangement.Center,
+		){
+			LazyHorizontalGrid(
+				rows = GridCells.Fixed(4),
+				horizontalArrangement = Arrangement.Center,
+				verticalArrangement = Arrangement.Center,
+				modifier = Modifier.height(tileHeight*4)
+				.width(tileWidth*4)
+				.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
+			) {
+				items(4*4){ i->
+					Box(
+						contentAlignment = Alignment.Center,
+						modifier = Modifier.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
+						.width(tileWidth)
+						.height(tileHeight)
+						.pointerInput(Unit) {
+							var dragEnded = true
+							detectDragGestures(
+								onDragStart = {
+									Log.d("2048GAME","Drag start")
+									dragEnded = false
+								},
+								onDragEnd = {
+									dragEnded = true
+								}
+							) { _, dragAmount ->
+								Log.d("2048GAME", "Drag detected, amount $dragAmount")
+								if (!dragEnded){
+									val dragDetectionMin = 20
+									var horizontalMove = false
+									if(abs(dragAmount.x)>abs(dragAmount.y)) horizontalMove = true
 
-                                        if(horizontalMove && dragAmount.x > dragDetectionMin){
-                                            Log.d("Drag","Right")
-                                            gameBoard.swipeRight()
-                                            tilesChanged = true
-                                        }
-                                        else if(horizontalMove && dragAmount.x < -dragDetectionMin){
-                                            Log.d("Drag","Left")
-                                            gameBoard.swipeLeft()
-                                            tilesChanged = true
-                                        }
-                                        else if(!horizontalMove && dragAmount.y > dragDetectionMin){
-                                            Log.d("Drag","Down")
-                                            gameBoard.swipeDown()
-                                            tilesChanged = true
-                                        }
-                                        else if(!horizontalMove && dragAmount.y < -dragDetectionMin){
-                                            Log.d("Drag","Up")
-                                            gameBoard.swipeUp()
-                                            tilesChanged = true
-                                        }
-                                        if(tilesChanged){
-                                            change.consume()
-                                            dragEnded = true
-                                            gameBoard.swipeLeft()
-                                            tilesContentArray.clear()
-                                            for (y in 0..<gameBoard.getGameGrid().height) {
-                                                for (x in 0..<gameBoard.getGameGrid().width) {
-                                                    if (x == 0) {
-                                                        tilesContentArray.add(Array(gameBoard.getGameGrid().width) { 0 })
-                                                    }
-                                                    tilesContentArray[y][x] = gameBoard.getGameGrid()[x, y].toInt()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                    ){
-                        // i/4 is y, i%4 is x
-                        var textValue: String = 2.0.pow(tilesContentArray[i/4][i%4]).toInt().toString()
-                        if(textValue == "1") textValue = "" // 2^0 is 1, so no number on the tile
-                        Text(
-                            text = textValue,
-                            fontSize = 30.sp,
-                            fontFamily = blockyFont,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-        }
+									if(horizontalMove && dragAmount.x > dragDetectionMin){
+										Log.d("2048GAME","Right")
+										gameBoard.swipeLeft()
+										Log.d("2048GAME",gameGrid.toString())
+									}
+									else if(horizontalMove && dragAmount.x < -dragDetectionMin){
+										Log.d("2048GAME","Left")
+										gameBoard.swipeRight()
+										Log.d("2048GAME",gameGrid.toString())
+									}
+									else if(!horizontalMove && dragAmount.y > dragDetectionMin){
+										Log.d("2048GAME","Down")
+										gameBoard.swipeDown()
+										Log.d("2048GAME",gameGrid.toString())
+									}
+									else if(!horizontalMove && dragAmount.y < -dragDetectionMin){
+										Log.d("2048GAME","Up")
+										gameBoard.swipeUp()
+										Log.d("2048GAME",gameGrid.toString())
+									}
+								}
+							}
+						}
+					){
+						// i/4 is y, i%4 is x
+						var textValue: String = powerToBase(gameGrid[i/4, i%4]).toString()
+						if(textValue == "1") textValue = "" // 2^0 is 1, so no number on the tile
+						Text(
+							text = textValue,
+							fontSize = 30.sp,
+							fontFamily = blockyFont,
+							fontWeight = FontWeight.Bold,
+							color = MaterialTheme.colorScheme.primary
+						)
+					}
+				}
+			}
+		}
 
-    }
+	}
 
 }
