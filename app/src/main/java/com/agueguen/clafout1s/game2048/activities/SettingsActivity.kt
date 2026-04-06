@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.os.Bundle
 import android.util.Log
@@ -41,7 +41,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.darkScheme
 import com.agueguen.clafout1s.game2048.database.UserSettings
 import com.agueguen.clafout1s.game2048.database.UserSettingsDao
 
-class SettingsActivity : Activity2048() {
+class SettingsActivity : AbstractActivity2048() {
 	lateinit var userSettingsDao: UserSettingsDao
 
 	@Composable

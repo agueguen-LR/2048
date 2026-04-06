@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -45,7 +45,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.utilities.formatUnixTime
 import com.agueguen.clafout1s.game2048.utilities.powerToBase
 
-class ScoreboardActivity : Activity2048(
+class ScoreboardActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().padding(top = 50.dp, bottom = 20.dp)
 ) {
 	private lateinit var scoreDao: ScoreDao
@@ -130,7 +130,7 @@ class ScoreboardActivity : Activity2048(
 				Spacer(modifier = Modifier.height(6.dp))
 
 				Text("Time Taken: ${score.timeTaken}")
-				Text("Highest tile reached: ${powerToBase(score.highestTile)}")
+				Text("Highest tile reached: ${powerToBase(score.highestTile.toByte())}")
 				Text("Moves used: ${score.movesTaken}")
 				Text("Board Format: ${score.boardLength}x${score.boardHeight}")
 				Text("Date: ${formatUnixTime(score.date)}")

@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -35,9 +35,8 @@ import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
-import com.agueguen.clafout1s.game2048.database.UserSettings
 
-class MainMenuActivity : Activity2048() {
+class MainMenuActivity : AbstractActivity2048() {
 
 	@Composable
 	override fun ScreenContent(){
@@ -49,7 +48,6 @@ class MainMenuActivity : Activity2048() {
 			MaterialTheme.colorScheme.primary,
 			MaterialTheme.colorScheme.errorContainer,
 			MaterialTheme.colorScheme.error)
-		startDatabase()
 
 		Column (
 			modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
@@ -70,7 +68,7 @@ class MainMenuActivity : Activity2048() {
 				modifier = Modifier.weight(2F)
 			) {
 				Button(
-					onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java)) },
+					onClick = { context.startActivity(Intent(context, GameActivity::class.java)) },
 					modifier = buttonModifiers,
 					colors = buttonColors
 				) {
@@ -93,30 +91,5 @@ class MainMenuActivity : Activity2048() {
 			}
 			Column(modifier = Modifier.weight(0.5F)) { }
 		}
-	}
-
-	fun startDatabase(){
-		Log.i("MainActivity", "Starting")
-		val db = AppDatabase.getDatabase(this)
-
-		val saveStateDao = db.saveStateDao()
-		val saveState = SaveState(1, ByteArray(16), 4, 4)
-		saveStateDao.create(saveState)
-		Log.i("MainActivity", saveStateDao.get(1).toString())
-		saveStateDao.delete(saveState)
-
-		val scoreDao = db.scoreDao()
-		scoreDao.reinitializeAll()
-		for (i in 0..<50){
-			scoreDao.save(
-				score = Random.nextLong(1, 1000),
-				highestTile = Random.nextInt(1,16).toByte(),
-				timeTaken = Random.nextLong(5,25),
-				movesTaken = Random.nextLong(1,10),
-				boardHeight = Random.nextInt(3,10),
-				boardLength = Random.nextInt(3,10)
-			)
-		}
-		//Log.i("MainActivity", scoreDao.getAll().toString())
 	}
 }
