@@ -5,7 +5,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@android:style/Theme.NoTitleBar">
+        android:theme="@android:style/Theme.NoTitleBar"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
@@ -13,6 +13,9 @@
             android:exported="false"/>
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ScoreboardActivity"
             android:exported="false"/>
         <activity
             android:name=".MainMenuActivity"

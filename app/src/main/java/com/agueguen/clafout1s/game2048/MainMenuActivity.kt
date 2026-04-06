@@ -2,6 +2,7 @@ package com.agueguen.clafout1s.game2048
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -23,21 +24,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.random.Random
+
+import com.agueguen.clafout1s.game2048.database.AppDatabase
+import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
-import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.UserSettings
 
 class MainMenuActivity : Activity2048() {
 
 	@Composable
 	override fun ScreenContent(){
-		// TODO: Change the connexions of the buttons to their actual activities
 		val commonModifierBases = Modifier.padding(15.dp).fillMaxWidth()
 		val buttonModifiers = commonModifierBases.height(80.dp)
 		val context = LocalContext.current
@@ -46,22 +49,24 @@ class MainMenuActivity : Activity2048() {
 			MaterialTheme.colorScheme.primary,
 			MaterialTheme.colorScheme.errorContainer,
 			MaterialTheme.colorScheme.error)
-			Column (
-				modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
-				verticalArrangement = Arrangement.SpaceEvenly
-			) {
-				Text(
-					text = "2048",
-					fontSize = 60.sp,
-					fontFamily = blockyFont,
-					fontWeight = FontWeight.Bold,
-					style = TextStyle(
-						brush = Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary))
-					),
-					modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
-					textAlign = TextAlign.Center,
-				)
-				Column(verticalArrangement = Arrangement.SpaceEvenly,
+		startDatabase()
+
+		Column (
+			modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
+			verticalArrangement = Arrangement.SpaceEvenly
+		) {
+			Text(
+				text = "2048",
+				fontSize = 60.sp,
+				fontFamily = blockyFont,
+				fontWeight = FontWeight.Bold,
+				style = TextStyle(
+					brush = Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary))
+				),
+				modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
+				textAlign = TextAlign.Center,
+			)
+			Column(verticalArrangement = Arrangement.SpaceEvenly,
 				modifier = Modifier.weight(2F)
 			) {
 				Button(
@@ -72,7 +77,7 @@ class MainMenuActivity : Activity2048() {
 					Text("START", fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
 				}
 				Button(
-					onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java))},
+					onClick = { context.startActivity(Intent(context, ScoreboardActivity::class.java))},
 					modifier = buttonModifiers,
 					colors = buttonColors
 				){
@@ -87,8 +92,31 @@ class MainMenuActivity : Activity2048() {
 				}
 			}
 			Column(modifier = Modifier.weight(0.5F)) { }
-
 		}
 	}
-}
 
+	fun startDatabase(){
+		Log.i("MainActivity", "Starting")
+		val db = AppDatabase.getDatabase(this)
+
+		val saveStateDao = db.saveStateDao()
+		val saveState = SaveState(1, ByteArray(16), 4, 4)
+		saveStateDao.create(saveState)
+		Log.i("MainActivity", saveStateDao.get(1).toString())
+		saveStateDao.delete(saveState)
+
+		val scoreDao = db.scoreDao()
+		scoreDao.reinitializeAll()
+		for (i in 0..<50){
+			scoreDao.save(
+				score = Random.nextLong(1, 1000),
+				highestTile = Random.nextInt(1,16).toByte(),
+				timeTaken = Random.nextLong(5,25),
+				movesTaken = Random.nextLong(1,10),
+				boardHeight = Random.nextInt(3,10),
+				boardLength = Random.nextInt(3,10)
+			)
+		}
+		//Log.i("MainActivity", scoreDao.getAll().toString())
+	}
+}
