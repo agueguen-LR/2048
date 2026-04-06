@@ -45,28 +45,15 @@ import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.utilities.formatUnixTime
 import com.agueguen.clafout1s.game2048.utilities.powerToBase
 
-class ScoreboardActivity : ComponentActivity() {
+class ScoreboardActivity : Activity2048(
+	modifier = Modifier.fillMaxSize().padding(top = 50.dp, bottom = 20.dp)
+) {
 	private lateinit var scoreDao: ScoreDao
 
-	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-	override fun onCreate(savedInstanceState: Bundle?) {
+	@Composable
+	override fun ScreenContent() {
 		val db = AppDatabase.getDatabase(this)
 		scoreDao = db.scoreDao()
-
-		super.onCreate(savedInstanceState)
-		setContent {
-			AppTheme {
-				Scaffold(modifier = Modifier
-				.fillMaxSize()
-				.padding(top = 50.dp, bottom = 20.dp)) {
-					Scoreboard()
-				}
-			}
-		}
-	}
-
-	@Composable
-	private fun Scoreboard(){
 		var allScores = remember { mutableStateOf(scoreDao.getAll()) }
 		var showDialog = remember { mutableStateOf(false) }
 

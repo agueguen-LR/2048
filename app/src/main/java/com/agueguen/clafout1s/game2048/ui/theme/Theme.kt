@@ -1,4 +1,5 @@
 package com.agueguen.clafout1s.game2048.ui.theme
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
@@ -9,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 
 // TODO: Find good color schemes
 
-private val lightScheme = lightColorScheme(
+val lightScheme = lightColorScheme(
     primary = primaryLight,
     onPrimary = onPrimaryLight,
     primaryContainer = primaryContainerLight,
@@ -47,7 +48,7 @@ private val lightScheme = lightColorScheme(
     surfaceContainerHighest = surfaceContainerHighestLight,
 )
 
-private val darkScheme = darkColorScheme(
+val darkScheme = darkColorScheme(
     primary = primaryDark,
     onPrimary = onPrimaryDark,
     primaryContainer = primaryContainerDark,
@@ -97,17 +98,19 @@ data class ColorFamily(
 // TODO: getting better fonts settings
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable() () -> Unit
+	theme: Int?,
+	content: @Composable() () -> Unit
 ) {
-    val mainColorScheme = darkScheme
-    // TODO: Add the conditions for different possible schemes
-  MaterialTheme(
-    colorScheme = mainColorScheme,
-    typography = MyTypography,
-    content = content
-  )
+	val colors = when (theme) {
+		null, 0 -> lightScheme
+		1 -> darkScheme
+		else -> lightScheme // fallback
+	}
+
+	MaterialTheme(
+		colorScheme = colors,
+		typography = MyTypography,
+		content = content
+	)
 }
 
