@@ -29,9 +29,6 @@ class GameActivity : ComponentActivity() {
 				}
 			}
 		}
-        val db = AppDatabase.getDatabase(this)
-        val scoreDao = db.scoreDao()
-        scoreDao.reinitializeAll()
     }
 }
 
