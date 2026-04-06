@@ -8,19 +8,16 @@
         android:theme="@android:style/Theme.NoTitleBar"
         android:roundIcon="@mipmap/ic_launcher_round">
         <activity
-            android:name=".GameActivity"
+            android:name=".activities.GameActivity"
             android:exported="false" />
         <activity
-            android:name=".ScoreboardActivity"
+            android:name=".activities.ScoreboardActivity"
             android:exported="false"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:exported="false"/>
         <activity
-            android:name=".ScoreboardActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".MainMenuActivity"
+            android:name=".activities.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

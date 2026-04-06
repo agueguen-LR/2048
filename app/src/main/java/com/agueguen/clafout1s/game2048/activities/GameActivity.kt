@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.content.Context
 import android.content.Intent
@@ -25,10 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
+import com.agueguen.clafout1s.game2048.GameInterface
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 
-class GameActivity : Activity2048(
+class GameActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 50.dp, bottom = 20.dp)
 ) {
 	private val gameInterface: GameInterface = GameInterface()

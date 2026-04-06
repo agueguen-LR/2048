@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -45,7 +45,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.utilities.formatUnixTime
 import com.agueguen.clafout1s.game2048.utilities.powerToBase
 
-class ScoreboardActivity : Activity2048(
+class ScoreboardActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().padding(top = 50.dp, bottom = 20.dp)
 ) {
 	private lateinit var scoreDao: ScoreDao

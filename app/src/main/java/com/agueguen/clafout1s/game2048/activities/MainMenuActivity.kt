@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -36,7 +36,7 @@ import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
-class MainMenuActivity : Activity2048() {
+class MainMenuActivity : AbstractActivity2048() {
 
 	@Composable
 	override fun ScreenContent(){

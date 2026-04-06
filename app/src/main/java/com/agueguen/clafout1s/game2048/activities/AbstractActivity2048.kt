@@ -1,4 +1,4 @@
-package com.agueguen.clafout1s.game2048
+package com.agueguen.clafout1s.game2048.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,12 +18,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.Flow
 
+import com.agueguen.clafout1s.game2048.R
+import com.agueguen.clafout1s.game2048.AudioManager
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.UserSettingsDao
 import com.agueguen.clafout1s.game2048.database.UserSettings
 
-abstract class Activity2048(private val modifier: Modifier = Modifier.fillMaxSize()) : ComponentActivity() {
+abstract class AbstractActivity2048(private val modifier: Modifier = Modifier.fillMaxSize()) : ComponentActivity() {
 
 	@Composable
 	abstract fun ScreenContent()

@@ -50,7 +50,6 @@ class GameInterface(
 ) {
 
 	private var gameBoard by mutableStateOf(GameBoard(boardWidth, boardHeight))
-	private val gameGrid = gameBoard.getGameGrid()
 	private lateinit var movesTaken: MutableState<Long>
 	private lateinit var score: MutableState<Long>
 	private lateinit var playerHasLost: MutableState<Boolean>
@@ -127,7 +126,7 @@ class GameInterface(
 				}
 			}
 		) {
-			val iVal = gameGrid[i / boardWidth, i % boardWidth]
+			val iVal = gameBoard.getGameGrid()[i / boardWidth, i % boardWidth]
 			val iValPower = powerToBase(iVal)
 
 			var textValue = iValPower.toString()
