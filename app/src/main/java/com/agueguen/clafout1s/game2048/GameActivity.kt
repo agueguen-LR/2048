@@ -17,7 +17,7 @@ class GameActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		val gameBoard = GameBoard(2,2)
-        val gameInterface = GameInterface(gameBoard)
+        val gameInterface = GameInterface(gameBoard,4)
 		setContent{
 			AppTheme() {
 				Scaffold(modifier = Modifier

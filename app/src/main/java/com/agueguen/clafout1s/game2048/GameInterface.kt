@@ -22,7 +22,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,16 +47,17 @@ import kotlin.math.abs
 import kotlin.math.max
 
 
-class GameInterface(gameBoardInput: GameBoard) {
+class GameInterface(gameBoardInput: GameBoard,goalValuePower:Int) {
 
-    val gameBoard = gameBoardInput
-    val goalValue = 4 // The power of 2 of the result considered a win
+    var gameBoard = gameBoardInput
+    val goalValuePower = goalValuePower // The power of 2 of the result considered a win
     var movesTaken = 0
     val boardWidth = gameBoard.getGameGrid().width
     val boardHeight = gameBoard.getGameGrid().height
 
     @Composable
     fun GameInterfaceComposable(){
+
         val gameGrid = gameBoard.getGameGrid()
         val tileNbX = boardWidth
         val tileNbY = boardHeight
@@ -63,6 +66,8 @@ class GameInterface(gameBoardInput: GameBoard) {
         var tileSize:Dp = 80.dp
         val gameContinues = remember { mutableStateOf(true) }
         val goalAchieved = remember { mutableStateOf(false) }
+        val resetGridPressed = remember { mutableStateOf(false) }
+        val score = remember { mutableIntStateOf(getGridScore()) }
 
         val totalTileWidth = with(LocalDensity.current) { tileNbX * tileSize.toPx() }
         val totalTileHeight = with(LocalDensity.current) { tileNbY * tileSize.toPx() }
@@ -94,57 +99,61 @@ class GameInterface(gameBoardInput: GameBoard) {
                     rows = GridCells.Fixed(tileNbX),
                     horizontalArrangement = Arrangement.Center,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.height(tileSize*tileNbY)
-                        .width(tileSize*tileNbX)
+                    modifier = Modifier
+                        .height(tileSize * tileNbY)
+                        .width(tileSize * tileNbX)
                         .border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
                 ) {
                     items(tileNbX*tileNbY){ i->
                         Box(
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
+                            modifier = Modifier
+                                .border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
                                 .width(tileSize)
                                 .height(tileSize)
                                 .pointerInput(Unit) {
                                     var dragEnded = true
                                     detectDragGestures(
                                         onDragStart = {
-                                            Log.d("2048GAME","Drag start")
+                                            Log.d("2048GAME", "Drag start")
                                             dragEnded = false
                                         },
                                         onDragEnd = {
                                             dragEnded = true
                                         }
                                     ) { _, dragAmount ->
-                                        if (!dragEnded){
+                                        if (!dragEnded) {
                                             val dragDetectionMin = 5
                                             dragEnded = true
 
                                             var horizontalMove = false
-                                            if(abs(dragAmount.x)>abs(dragAmount.y)) horizontalMove = true
+                                            if (abs(dragAmount.x) > abs(dragAmount.y)) horizontalMove =
+                                                true
 
-                                            if(horizontalMove && dragAmount.x > dragDetectionMin){
-                                                Log.d("2048GAME","Right")
+                                            if (horizontalMove && dragAmount.x > dragDetectionMin) {
+                                                Log.d("2048GAME", "Right")
                                                 movesTaken++
                                                 gameContinues.value = gameBoard.swipeLeft()
-                                                Log.d("2048GAME",gameGrid.toString())
-                                            }
-                                            else if(horizontalMove && dragAmount.x < -dragDetectionMin){
-                                                Log.d("2048GAME","Left")
+                                                score.intValue = getGridScore()
+                                                Log.d("2048GAME", gameGrid.toString())
+                                            } else if (horizontalMove && dragAmount.x < -dragDetectionMin) {
+                                                Log.d("2048GAME", "Left")
                                                 movesTaken++
                                                 gameContinues.value = gameBoard.swipeRight()
-                                                Log.d("2048GAME",gameGrid.toString())
-                                            }
-                                            else if(!horizontalMove && dragAmount.y > dragDetectionMin){
-                                                Log.d("2048GAME","Down")
+                                                score.intValue = getGridScore()
+                                                Log.d("2048GAME", gameGrid.toString())
+                                            } else if (!horizontalMove && dragAmount.y > dragDetectionMin) {
+                                                Log.d("2048GAME", "Down")
                                                 movesTaken++
                                                 gameContinues.value = gameBoard.swipeDown()
-                                                Log.d("2048GAME",gameGrid.toString())
-                                            }
-                                            else if(!horizontalMove && dragAmount.y < -dragDetectionMin){
-                                                Log.d("2048GAME","Up")
+                                                score.intValue = getGridScore()
+                                                Log.d("2048GAME", gameGrid.toString())
+                                            } else if (!horizontalMove && dragAmount.y < -dragDetectionMin) {
+                                                Log.d("2048GAME", "Up")
                                                 movesTaken++
                                                 gameContinues.value = gameBoard.swipeUp()
-                                                Log.d("2048GAME",gameGrid.toString())
+                                                score.intValue = getGridScore()
+                                                Log.d("2048GAME", gameGrid.toString())
                                             }
                                         }
                                     }
@@ -152,9 +161,10 @@ class GameInterface(gameBoardInput: GameBoard) {
                         ){
                             // i/tileNb is y, i%tileNb is x
                             val iVal = gameGrid[i/tileNbX, i%tileNbX]
-                            var textValue: String = powerToBase(iVal).toString()
+                            val iValPower = powerToBase(iVal)
+                            var textValue: String = iValPower.toString()
                             if(textValue == "1") textValue = "" // 2^0 is 1, so no number on the tile
-                            if(iVal >= goalValue){
+                            if(iVal >= goalValuePower){
                                 goalAchieved.value = true
                             }
                             Text(
@@ -168,28 +178,54 @@ class GameInterface(gameBoardInput: GameBoard) {
                     }
                 }
             }
+            Button(
+                onClick = {
+                    resetGridPressed.value = true
+                }
+            ){
+                Text("Resets the game")
+            }
+            Text("Score: ${score.intValue}")
         }
         if(!gameContinues.value){
+            val context = LocalContext.current
             EndGameDialog(gameContinues,false)
-            //endGameScoreAndReset(LocalContext.current)
+            //saveActualScore(context)
+            resetBoard(score)
         }
         if(goalAchieved.value){
+            val context = LocalContext.current
             EndGameDialog(goalAchieved,true)
-            //endGameScoreAndReset(LocalContext.current)
+            //saveActualScore(context)
+            resetBoard(score)
         }
+        if(resetGridPressed.value){
+            ResetGridDialog(resetGridPressed,score)
+        }
+    }
+
+    fun getGridScore(): Int {
+        var score = 0
+        for (i in 0..<boardWidth*boardHeight){
+            val iVal = gameBoard.getGameGrid()[i/boardWidth, i%boardWidth]
+            Log.d("GridScore",iVal.toString())
+            if(iVal.toInt() != 0)
+                score += powerToBase(iVal).toInt()
+        }
+        return score
     }
 
     /**
      * Shows a dialog at the end of the game.
      *
-     * @param showing: The function must be called on an if statement on the value of showing, for the AlertDialog to be able to close
+     * @param mutableBoolean: The function must be called on an if statement on the value of mutableBoolean, for the AlertDialog to be able to close
      */
     @Composable
-    fun EndGameDialog(showing: MutableState<Boolean>,win: Boolean){
+    fun EndGameDialog(mutableBoolean: MutableState<Boolean>,win: Boolean){
         val context = LocalContext.current
         AlertDialog(
             onDismissRequest = {
-                showing.value = !showing.value // Closes the dialog
+                mutableBoolean.value = !mutableBoolean.value // Closes the dialog
             },
             title = {
                 if(win)
@@ -201,23 +237,106 @@ class GameInterface(gameBoardInput: GameBoard) {
                 if(win)
                     Text("You can check your score in the scoreboard.")
                 else
-                    Text("But you can still check your score in the scoreboard.")
+                    Text("Do you want to add your score to the scoreboard ?")
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        // TODO: Replace SwapTestActivity by the ScoreBoardActivity
-                        context.startActivity(Intent(context, SwapTestActivity::class.java))
+                if(win) {
+                    Button(
+                        onClick = {
+                            // TODO: Replace SwapTestActivity by the ScoreBoardActivity
+                            context.startActivity(Intent(context, SwapTestActivity::class.java))
+                        }
+                    ) {
+                        Text("To scoreboard")
                     }
-                ) {
-                    Text("To scoreboard")
+                }
+                else{
+                    Button(
+                        onClick = {
+                            saveActualScore(context)
+                        }
+                    ) {
+                        Text("Add to scoreboard")
+                    }
                 }
             },
-            dismissButton = {}
+            dismissButton = {
+                Button(
+                    onClick = {
+                        mutableBoolean.value = !mutableBoolean.value
+                    }
+                ) {
+                    Text("No")
+                }
+            }
         )
     }
 
-    fun endGameScoreAndReset(context: Context){
+    @Composable
+    fun ResetGridDialog(mutableBoolean: MutableState<Boolean>,scoreMutable: MutableIntState){
+        val resetConfirmed = remember { mutableStateOf(false) }
+        AlertDialog(
+            onDismissRequest = {
+                mutableBoolean.value = !mutableBoolean.value
+            },
+            title = { Text("Reseting grid") },
+            text = { Text("Do you really want to reset the grid ?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        resetConfirmed.value = true // launches SaveScoreDialog
+                        resetBoard(scoreMutable)
+                        // Closes this dialog after showing SaveScoreDialog, later in the function
+                    }
+                ) { Text("Yes") }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        mutableBoolean.value = !mutableBoolean.value // closes this dialog
+                    }
+                ) { Text("No") }
+            }
+        )
+        val saveScoreDialogStarted = remember { mutableStateOf(false) }
+        if(resetConfirmed.value){
+            saveScoreDialogStarted.value = true
+            SaveScoreDialog(resetConfirmed)
+        }
+        if(saveScoreDialogStarted.value && !resetConfirmed.value){
+            mutableBoolean.value = !mutableBoolean.value // closes this dialog
+        }
+    }
+
+    @Composable
+    fun SaveScoreDialog(mutableBoolean: MutableState<Boolean>){
+        val context = LocalContext.current
+        AlertDialog(
+            onDismissRequest = {
+                mutableBoolean.value = !mutableBoolean.value
+            },
+            title = { Text("Saving score") },
+            text = { Text("Do you want to save your actual score in the scoreboard ?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        //saveActualScore(context)
+                        mutableBoolean.value = !mutableBoolean.value // closes this dialog
+                    }
+                ) { Text("Yes") }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        mutableBoolean.value = !mutableBoolean.value // closes this dialog
+                    }
+                ) { Text("No") }
+            }
+        )
+    }
+
+    fun saveActualScore(context: Context){
+        // TODO: Testing if the score save is functional
         val db = AppDatabase.getDatabase(context)
         val scoreDao = db.scoreDao()
         val gameGrid = gameBoard.getGameGrid()
@@ -232,10 +351,12 @@ class GameInterface(gameBoardInput: GameBoard) {
         }
         // TODO: Recording time in a global variable
         scoreDao.save(score,highestTile,0,movesTaken.toLong(),boardHeight,boardWidth)
-        resetBoard()
     }
 
-    fun resetBoard(){
-        // TODO: Clearing game board, potentially making the user choose a new grid size
+    fun resetBoard(scoreMutable: MutableIntState){
+        // TODO: Making sure the function is only called once (and not in continuation because of mutable boolean)
+        gameBoard = GameBoard(boardWidth,boardHeight)
+        movesTaken = 0
+        scoreMutable.intValue = getGridScore()
     }
 }
