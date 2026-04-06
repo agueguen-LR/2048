@@ -41,25 +41,12 @@ import com.agueguen.clafout1s.game2048.ui.theme.darkScheme
 import com.agueguen.clafout1s.game2048.database.UserSettings
 import com.agueguen.clafout1s.game2048.database.UserSettingsDao
 
-class SettingsActivity : ComponentActivity() {
-	private lateinit var userSettingsDao : UserSettingsDao
-	private lateinit var theme: MutableState<Int>
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
-		setContent {
-			theme = remember { mutableStateOf(userSettingsDao.getUserSettings()!!.theme) }
-			AppTheme(theme.value) {
-				Scaffold(modifier = Modifier.fillMaxSize()) {
-					Settings()
-				}
-			}
-		}
-	}
+class SettingsActivity : Activity2048() {
+	lateinit var userSettingsDao: UserSettingsDao
 
 	@Composable
-	fun Settings() {
+	override fun ScreenContent() {
+		userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
 		val userSettingsState = remember { mutableStateOf(userSettingsDao.getUserSettings()) }
 		val userSettings = userSettingsState.value!!
 
@@ -74,7 +61,6 @@ class SettingsActivity : ComponentActivity() {
 			.fillMaxSize(),
 			verticalArrangement = Arrangement.SpaceEvenly
 		) {
-			// Header
 			Text(
 				text = "Settings",
 				fontSize = 50.sp,
@@ -87,7 +73,6 @@ class SettingsActivity : ComponentActivity() {
 				textAlign = TextAlign.Center
 			)
 
-			// Settings buttons and ThemePicker
 			Column(
 				verticalArrangement = Arrangement.SpaceEvenly,
 				modifier = Modifier.weight(2f)
@@ -156,12 +141,12 @@ class SettingsActivity : ComponentActivity() {
 					)
 				}
 
-				// Theme picker
 				ThemePicker(userSettingsState)
 			}
 
 			Column(modifier = Modifier.weight(0.5f)) {}
 		}
+
 	}
 
 	@Composable
@@ -192,7 +177,6 @@ class SettingsActivity : ComponentActivity() {
 					.clickable {
 						val updated = userSettings.copy(theme = index)
 						userSettingsState.value = updated
-						theme.value = index
 						userSettingsDao.insert(updated)
 					},
 					contentAlignment = Alignment.Center

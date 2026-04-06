@@ -33,29 +33,11 @@ import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.UserSettings
 
-class MainMenuActivity : ComponentActivity() {
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
+class MainMenuActivity : Activity2048() {
 
-		val userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
-		var settings = userSettingsDao.getUserSettings()
-		if (settings == null) {
-			settings = UserSettings()
-			userSettingsDao.insert(settings)
-		}
-		setContent {
-			AppTheme(settings.theme) {
-				Scaffold(modifier = Modifier.fillMaxSize()) {
-					Menu()
-				}
-			}
-		}
-
-	}
-
-	// TODO: Change the connexions of the buttons to their actual activities
 	@Composable
-	private fun Menu() {
+	override fun ScreenContent(){
+		// TODO: Change the connexions of the buttons to their actual activities
 		val commonModifierBases = Modifier.padding(15.dp).fillMaxWidth()
 		val buttonModifiers = commonModifierBases.height(80.dp)
 		val context = LocalContext.current

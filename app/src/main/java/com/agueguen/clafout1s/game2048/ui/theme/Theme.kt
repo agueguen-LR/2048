@@ -98,11 +98,11 @@ data class ColorFamily(
 // TODO: getting better fonts settings
 @Composable
 fun AppTheme(
-	theme: Int,
+	theme: Int?,
 	content: @Composable() () -> Unit
 ) {
 	val colors = when (theme) {
-		0 -> lightScheme
+		null, 0 -> lightScheme
 		1 -> darkScheme
 		else -> lightScheme // fallback
 	}
