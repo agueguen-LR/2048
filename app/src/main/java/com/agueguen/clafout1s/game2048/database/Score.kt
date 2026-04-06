@@ -8,7 +8,7 @@ import androidx.room.ColumnInfo
 data class Score(
 	@PrimaryKey(autoGenerate = true) val id: Int,
 	val score: Long,
-	val highestTile: Long,
+	val highestTile: Byte,
 	val timeTaken: Long,
 	val movesTaken: Long,
 	val date: Long,

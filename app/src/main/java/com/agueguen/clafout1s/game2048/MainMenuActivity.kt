@@ -29,89 +29,67 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.random.Random
+
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
-import kotlin.random.Random
 
-class MainMenuActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()
-                    .padding(top = 50.dp, bottom = 20.dp)) {
-                    Menu()
-                }
-            }
-        }
-    }
-}
+class MainMenuActivity : Activity2048() {
 
-// TODO: Change the connexions of the buttons to their actual activities
-@Composable
-fun Menu() {
-    val commonModifierBases = Modifier.padding(15.dp).fillMaxWidth()
-    val buttonModifiers = commonModifierBases.height(80.dp)
-    val context = LocalContext.current
-    val buttonColors = ButtonColors(
-        MaterialTheme.colorScheme.surfaceBright,
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.errorContainer,
-        MaterialTheme.colorScheme.error)
-    Column (
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-        Text(
-            text = "2048",
-            fontSize = 60.sp,
-            fontFamily = blockyFont,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                brush = Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary))
-            ),
-            modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
-            textAlign = TextAlign.Center,
-        )
-        Column(verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.weight(2F)
-        ) {
-            Button(
-                onClick = { context.startActivity(Intent(context, GameActivity::class.java)) },
-                modifier = buttonModifiers,
-                colors = buttonColors
-            ) {
-                Text("START", fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
-            }
-            Button(
-                onClick = { context.startActivity(Intent(context, ScoreboardActivity::class.java))},
-                modifier = buttonModifiers,
-                colors = buttonColors
-            ){
-                Text("SCOREBOARD",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
-            }
-            Button(
-                onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java))},
-                modifier = buttonModifiers,
-                colors = buttonColors
-            ){
-                Text("SETTINGS",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
-            }
-        }
-        Column(modifier = Modifier.weight(0.5F)) { }
+	@Composable
+	override fun ScreenContent(){
+		val commonModifierBases = Modifier.padding(15.dp).fillMaxWidth()
+		val buttonModifiers = commonModifierBases.height(80.dp)
+		val context = LocalContext.current
+		val buttonColors = ButtonColors(
+			MaterialTheme.colorScheme.surfaceBright,
+			MaterialTheme.colorScheme.primary,
+			MaterialTheme.colorScheme.errorContainer,
+			MaterialTheme.colorScheme.error)
 
-    }
-}
-
-@Preview
-@Composable
-fun PreviewMenu(){
-    AppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize().padding(10.dp)) {
-            Menu()
-        }
-    }
-
+		Column (
+			modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
+			verticalArrangement = Arrangement.SpaceEvenly
+		) {
+			Text(
+				text = "2048",
+				fontSize = 60.sp,
+				fontFamily = blockyFont,
+				fontWeight = FontWeight.Bold,
+				style = TextStyle(
+					brush = Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary))
+				),
+				modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
+				textAlign = TextAlign.Center,
+			)
+			Column(verticalArrangement = Arrangement.SpaceEvenly,
+				modifier = Modifier.weight(2F)
+			) {
+				Button(
+					onClick = { context.startActivity(Intent(context, GameActivity::class.java)) },
+					modifier = buttonModifiers,
+					colors = buttonColors
+				) {
+					Text("START", fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
+				}
+				Button(
+					onClick = { context.startActivity(Intent(context, ScoreboardActivity::class.java))},
+					modifier = buttonModifiers,
+					colors = buttonColors
+				){
+					Text("SCOREBOARD",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
+				}
+				Button(
+					onClick = { context.startActivity(Intent(context, SettingsActivity::class.java))},
+					modifier = buttonModifiers,
+					colors = buttonColors
+				){
+					Text("SETTINGS",fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
+				}
+			}
+			Column(modifier = Modifier.weight(0.5F)) { }
+		}
+	}
 }

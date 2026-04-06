@@ -363,14 +363,14 @@ class GameInterface(gameBoardInput: GameBoard,goalValuePower:Int) {
         val db = AppDatabase.getDatabase(context)
         val scoreDao = db.scoreDao()
         val gameGrid = gameBoard.getGameGrid()
-        var highestTile:Long=0
+        var highestTile:Byte=0
         var score:Long = 0
         for (i in 0..<boardWidth*boardHeight){
             val tileValue:Byte = gameGrid[i/boardWidth, i%boardWidth]
             if(tileValue.toInt() != 0){
                 val tilePowerValue = powerToBase(tileValue)
                 if(tileValue>highestTile){
-                    highestTile = tileValue.toLong()
+                    highestTile = tileValue
                 }
                 score += tilePowerValue.toInt()
             }
