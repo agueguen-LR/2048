@@ -385,7 +385,6 @@ class GameInterface(gameBoardInput: GameBoard,goalValuePower:Int) {
      * @param scoreMutable: The mutable of the score, passed down to be able to reset the score of the board.
      */
     fun resetBoard(scoreMutable: MutableIntState){
-        // TODO: Making sure the function is only called once (and not in continuation because of mutable boolean)
         gameBoard = GameBoard(boardWidth,boardHeight)
         movesTaken = 0
         scoreMutable.intValue = getGridScore()
