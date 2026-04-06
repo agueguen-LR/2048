@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 
 class GameActivity : ComponentActivity() {
@@ -28,6 +29,9 @@ class GameActivity : ComponentActivity() {
 				}
 			}
 		}
-	}
+        val db = AppDatabase.getDatabase(this)
+        val scoreDao = db.scoreDao()
+        scoreDao.reinitializeAll()
+    }
 }
 

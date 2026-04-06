@@ -2,6 +2,7 @@ package com.agueguen.clafout1s.game2048
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -23,20 +24,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.agueguen.clafout1s.game2048.database.AppDatabase
+import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
+import kotlin.random.Random
 
 class MainMenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(modifier = Modifier.fillMaxSize()
+                    .padding(top = 50.dp, bottom = 20.dp)) {
                     Menu()
                 }
             }
@@ -81,7 +86,7 @@ fun Menu() {
                 Text("START", fontFamily = blockyFont, fontWeight = FontWeight.Light, fontSize = 40.sp)
             }
             Button(
-                onClick = { context.startActivity(Intent(context, SwapTestActivity::class.java))},
+                onClick = { context.startActivity(Intent(context, ScoreboardActivity::class.java))},
                 modifier = buttonModifiers,
                 colors = buttonColors
             ){
