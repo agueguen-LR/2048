@@ -45,8 +45,8 @@ import com.agueguen.clafout1s.game2048.utilities.powerToBase
 import com.agueguen.clafout1s.game2048.utilities.ByteGrid
 
 class GameInterface(
-	private val boardWidth: Int = 4,
-	private val boardHeight: Int = 4
+	val boardWidth: Int = 4,
+	val boardHeight: Int = 4
 ) {
 
 	private var gameBoard by mutableStateOf(GameBoard(boardWidth, boardHeight))
