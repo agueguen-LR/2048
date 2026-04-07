@@ -36,7 +36,7 @@ class GameActivity : AbstractActivity2048(
 	private lateinit var showEndDialog: MutableState<Boolean>
 	private lateinit var showResetDialog: MutableState<Boolean>
 	private lateinit var showSaveScoreDialog: MutableState<Boolean>
-	private val winCondition: Byte = 11 //TODO Make this adapted to grid size
+	private var winCondition: Byte = 11 // 2048
 
 	@Composable
 	override fun ScreenContent(){
@@ -44,6 +44,13 @@ class GameActivity : AbstractActivity2048(
 			intent.getIntExtra("width", 4),
 			intent.getIntExtra("height", 4)
 		)}
+		winCondition = when (gameInterface.boardWidth * gameInterface.boardHeight) {
+			9 -> 6 // 3*3 goal is 64
+			16 -> 11 // 4*4 goal is 2048
+			25 -> 14 // 5*5 goal is 16384
+			36 -> 17 // 6*6 goal is 131072
+			else -> 11 // just default to 2048, it's the name of the game after all
+		}
 		showResetDialog = remember { mutableStateOf(false) }
 		showSaveScoreDialog = remember { mutableStateOf(false) }
 		showEndDialog = remember { mutableStateOf(false) }
@@ -200,8 +207,8 @@ class GameActivity : AbstractActivity2048(
 			gameInterface.getHighestTile().value,
 			0,
 			gameInterface.getMovesTaken().value,
-			4,
-			4
+			gameInterface.boardWidth,
+			gameInterface.boardHeight
 		)
 	}
 }
