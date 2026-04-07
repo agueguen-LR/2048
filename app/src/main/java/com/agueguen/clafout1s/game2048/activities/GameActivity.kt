@@ -32,7 +32,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 class GameActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 50.dp, bottom = 20.dp)
 ) {
-	private val gameInterface: GameInterface = GameInterface()
+	private lateinit var gameInterface: GameInterface
 	private lateinit var showEndDialog: MutableState<Boolean>
 	private lateinit var showResetDialog: MutableState<Boolean>
 	private lateinit var showSaveScoreDialog: MutableState<Boolean>
@@ -40,6 +40,10 @@ class GameActivity : AbstractActivity2048(
 
 	@Composable
 	override fun ScreenContent(){
+		gameInterface = remember { GameInterface(
+			intent.getIntExtra("width", 4),
+			intent.getIntExtra("height", 4)
+		)}
 		showResetDialog = remember { mutableStateOf(false) }
 		showSaveScoreDialog = remember { mutableStateOf(false) }
 		showEndDialog = remember { mutableStateOf(false) }
