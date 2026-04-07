@@ -83,7 +83,7 @@ class GameInterface(
 		movesTaken.value = saveState.movesTaken
 	}
 
-	@Composable
+ 	@Composable
 	fun GameInterfaceComposable(){
 		val screenHeight = LocalWindowInfo.current.containerSize.height
 		val screenWidth = LocalWindowInfo.current.containerSize.width
