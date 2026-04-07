@@ -15,19 +15,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import com.agueguen.clafout1s.game2048.GameInterface
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
+import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
 class GameActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 50.dp, bottom = 20.dp)
@@ -57,24 +63,36 @@ class GameActivity : AbstractActivity2048(
 
 		Column(
 			modifier = Modifier.fillMaxHeight(),
-			verticalArrangement = Arrangement.Center
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			Row(
-				modifier = Modifier.fillMaxWidth(),
+				modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
 				horizontalArrangement = Arrangement.Center,
 			){
 				gameInterface.GameInterfaceComposable()
 			}
 
+			Text(
+				"Score: ${gameInterface.getScore().value}",
+				fontSize = 40.sp,
+				color = MaterialTheme.colorScheme.secondary,
+				modifier = Modifier.padding(20.dp)
+			)
+
 			Button(
+				modifier = Modifier.padding(20.dp),
 				onClick = {
 					showResetDialog.value = true
 				}
 			){
-				Text("Reset the game")
+				Text(
+					"Reset the game",
+					fontFamily = blockyFont,
+					fontSize = 30.sp
+				)
 			}
 
-			Text("Score: ${gameInterface.getScore().value}")
 		}
 
 		val hasLost = gameInterface.hasPlayerLost().value
@@ -113,7 +131,7 @@ class GameActivity : AbstractActivity2048(
 							showEndDialog.value = false
 						}
 					) {
-						Text("To scoreboard")
+						Text("To scoreboard",fontFamily = blockyFont, fontWeight = FontWeight.Bold)
 					}
 				}
 				else{
@@ -124,7 +142,7 @@ class GameActivity : AbstractActivity2048(
 							showEndDialog.value = false
 						}
 					) {
-						Text("Add to scoreboard")
+						Text("Add to scoreboard",fontFamily = blockyFont, fontWeight = FontWeight.Bold)
 					}
 				}
 			},
@@ -134,7 +152,7 @@ class GameActivity : AbstractActivity2048(
 						showEndDialog.value = false
 					}
 				) {
-					Text("No")
+					Text("No",fontFamily = blockyFont, fontWeight = FontWeight.Bold)
 				}
 			}
 		)
@@ -154,12 +172,12 @@ class GameActivity : AbstractActivity2048(
 						showResetDialog.value = false
 						showSaveScoreDialog.value = true
 					}
-				) { Text("Yes") }
+				) { Text("Yes",fontFamily = blockyFont, fontWeight = FontWeight.Bold) }
 			},
 			dismissButton = {
 				Button(
 					onClick = { showResetDialog.value = false }
-				) { Text("No") }
+				) { Text("No",fontFamily = blockyFont, fontWeight = FontWeight.Bold) }
 			}
 		)
 	}
@@ -185,7 +203,7 @@ class GameActivity : AbstractActivity2048(
 						gameInterface.resetBoard()
 						showSaveScoreDialog.value = false
 					}
-				) { Text("Yes") }
+				) { Text("Yes",fontFamily = blockyFont, fontWeight = FontWeight.Bold) }
 			},
 			dismissButton = {
 				Button(
@@ -193,7 +211,7 @@ class GameActivity : AbstractActivity2048(
 						gameInterface.resetBoard()
 						showSaveScoreDialog.value = false 
 					}
-				) { Text("No") }
+				) { Text("No",fontFamily = blockyFont, fontWeight = FontWeight.Bold) }
 			}
 		)
 	}
