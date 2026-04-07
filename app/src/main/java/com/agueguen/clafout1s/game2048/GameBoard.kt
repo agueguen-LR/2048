@@ -10,29 +10,44 @@ class GameBoard {
 
   init {
     board = ByteGrid(4, 4)
-    assert(createNewTile())
+    createNewTile()
   }
 
   constructor(boardLength: Int = 4, boardHeight: Int = 4) {
     assert(boardLength > 1 && boardHeight > 1)
     board = ByteGrid(boardLength, boardHeight)
-    assert(createNewTile())
+    createNewTile()
   }
 
   constructor(saveState: SaveState) {
     board = ByteGrid(saveState)
   }
 
-  private fun createNewTile(): Boolean {
+	private fun isMovePossible(): Boolean {
+		for (row in board.rows()) {
+			if (row[0] == 0.toByte()) return true
+			for (i in (0..<row.length-1)) {
+				if (row[i+1] == 0.toByte()) return true
+				if (row[i].equals(row[i+1])) return true
+			}
+		}
+		for (col in board.columns()) {
+			for (i in (0..<col.length-1)) {
+				if (col[i].equals(col[i+1])) return true
+			}
+		}
+		return false
+	}
+
+  private fun createNewTile() {
     val emptyTiles = ArrayList<Int>()
 		for (i in 0..<board.data.size) {
 			if (board.data[i] == 0.toByte()){
 				emptyTiles.add(i)
 			}
 		}
-    if (emptyTiles.isEmpty()) return false // Game over
+    if (emptyTiles.isEmpty()) return
     board.data[emptyTiles.random()] = listOf(1, 1, 1, 2).random().toByte()
-    return true
   }
 
 	private fun swipe(views: Sequence<ByteView>, viewLength: Int, reversed: Boolean = false): Boolean {
@@ -64,7 +79,8 @@ class GameBoard {
 				view[i] = store.removeLastOrNull() ?: 0
 			}
 		}
-		return createNewTile()
+		createNewTile()
+		return isMovePossible()
   }
 	
 	/**
