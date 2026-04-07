@@ -38,6 +38,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,9 @@ import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 import com.agueguen.clafout1s.game2048.utilities.powerToBase
 import com.agueguen.clafout1s.game2048.utilities.ByteGrid
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 
 class GameInterface(
 	val boardWidth: Int = 4,
@@ -153,7 +157,7 @@ class GameInterface(
 
 			Text(
 				text = textValue,
-				fontSize = with(LocalDensity.current) { tileSize.toSp() / 2 },
+				fontSize = with(LocalDensity.current) { (tileSize/max(textValue.length,2)).toSp() },
 				fontFamily = blockyFont,
 				fontWeight = FontWeight.Bold,
 				color = MaterialTheme.colorScheme.primary
