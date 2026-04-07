@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -29,6 +31,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -37,6 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
+import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.RoundedPolygon
+import androidx.graphics.shapes.toPath
 import kotlin.math.abs
 
 import com.agueguen.clafout1s.game2048.database.AppDatabase
@@ -65,36 +74,41 @@ class GameInterface(
 		val screenHeight = LocalWindowInfo.current.containerSize.height
 		val screenWidth = LocalWindowInfo.current.containerSize.width
 		var tileSize:Dp = 80.dp
+        val marginSize:Dp = 10.dp // Used for space between tiles, padding, and the borders of the grid
+        val marginNbX = boardWidth+3 // nbTiles -1 + 4 padding
+        val marginNbY = boardHeight+3
 
-		val totalTileWidth = with(LocalDensity.current) { boardWidth * tileSize.toPx() }
-		val totalTileHeight = with(LocalDensity.current) { boardHeight * tileSize.toPx() }
-		if(totalTileWidth > screenWidth && totalTileHeight > screenHeight){
-			if(totalTileWidth>=totalTileHeight){
-				// +1 to boardWidth to have some margins (of half the tileSize)
-				tileSize = with(LocalDensity.current){(screenWidth / (boardWidth+1)).toDp()}
+		val totalWidthPx = with(LocalDensity.current) { boardWidth*tileSize.toPx() + marginNbX*marginSize.toPx()}
+		val totalHeightPx = with(LocalDensity.current) { boardHeight*tileSize.toPx() + marginNbY*marginSize.toPx()}
+        if(totalWidthPx > screenWidth && totalHeightPx > screenHeight){
+			if(totalWidthPx>=totalHeightPx){
+                tileSize = with(LocalDensity.current){((screenWidth-marginNbX*marginSize.toPx())/boardWidth).toDp()}
 			}
 			else{
-				tileSize = with(LocalDensity.current){(screenHeight / (boardHeight+1)).toDp()}
+				tileSize = with(LocalDensity.current){((screenHeight-marginNbY*marginSize.toPx())/boardHeight).toDp()}
 			}
 		}
-		else if(totalTileWidth > screenWidth){
-			tileSize = with(LocalDensity.current){(screenWidth / (boardWidth+1)).toDp()}
+		else if(totalWidthPx > screenWidth){
+            tileSize = with(LocalDensity.current){((screenWidth-marginNbX*marginSize.toPx())/boardWidth).toDp()}
 		}
-		else if(totalTileHeight > screenHeight){
-			tileSize = with(LocalDensity.current){(screenHeight / (boardHeight+1)).toDp()}
+		else if(totalHeightPx > screenHeight){
+            tileSize = with(LocalDensity.current){((screenHeight-marginNbY*marginSize.toPx())/boardHeight).toDp()}
 		}
+        Log.d("Test","${tileSize * boardHeight + marginSize * marginNbY}, tile_size: $tileSize, margin_size: $marginSize")
+		Box(modifier = Modifier.padding(marginSize)){
+            LazyHorizontalGrid(
+                rows = GridCells.Fixed(boardWidth),
+                horizontalArrangement = Arrangement.spacedBy(marginSize),
+                verticalArrangement = Arrangement.spacedBy(marginSize),
+                modifier = Modifier
+                    .height(tileSize * boardHeight + marginSize * (marginNbY-4))
+                //.background(MaterialTheme.colorScheme.primaryContainer)
+                //.border(BorderStroke(marginSize, MaterialTheme.colorScheme.primaryContainer))
+            ) {
+                items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
+            }
+        }
 
-		LazyHorizontalGrid(
-			rows = GridCells.Fixed(boardWidth),
-			horizontalArrangement = Arrangement.Center,
-			verticalArrangement = Arrangement.Center,
-			modifier = Modifier
-			.height(tileSize * boardHeight)
-			.width(tileSize * boardWidth)
-			.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
-		) {
-			items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
-		}
 	}
 
 	/**
@@ -112,19 +126,20 @@ class GameInterface(
 		Box(
 			contentAlignment = Alignment.Center,
 			modifier = Modifier
-			.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
-			.width(tileSize)
-			.height(tileSize)
-			.pointerInput(Unit) {
-				//TODO this should be on the grid rather than the tiles
-				// but there are detection issues, cause the tiles cover the grid
-				detectDragGestures(
-					onDragStart = { dragEnded.value = false },
-					onDragEnd = { dragEnded.value = true }
-				) { _, dragAmount ->
-					handleDragGesture(dragAmount, dragEnded)
-				}
-			}
+                //.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
+            .background(MaterialTheme.colorScheme.onPrimaryContainer)
+                .width(tileSize)
+                .height(tileSize)
+                .pointerInput(Unit) {
+                    //TODO this should be on the grid rather than the tiles
+                    // but there are detection issues, cause the tiles cover the grid
+                    detectDragGestures(
+                        onDragStart = { dragEnded.value = false },
+                        onDragEnd = { dragEnded.value = true }
+                    ) { _, dragAmount ->
+                        handleDragGesture(dragAmount, dragEnded)
+                    }
+                }
 		) {
 			val iVal = gameBoard.getGameGrid()[i / boardWidth, i % boardWidth]
 			val iValPower = powerToBase(iVal)
