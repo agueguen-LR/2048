@@ -81,29 +81,9 @@ class GameActivity : AbstractActivity2048(
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			Row(
-				modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-				horizontalArrangement = Arrangement.Center,
-			){
-				gameInterface.GameInterfaceComposable()
-			}
-
-			Text(
-				"Score: ${gameInterface.score.value}",
-				fontSize = 40.sp,
-				color = MaterialTheme.colorScheme.secondary,
-				modifier = Modifier.padding(10.dp)
-			)
-
-			Text(
-				"Time: ${gameInterface.timer.value}",
-				fontSize = 40.sp,
-				color = MaterialTheme.colorScheme.secondary,
-				modifier = Modifier.padding(10.dp)
-			)
 
 			Button(
-				modifier = Modifier.padding(10.dp),
+				modifier = Modifier.padding(20.dp),
 				onClick = {
 					AudioManager.playSound(context, R.raw.click)
 					showResetDialog.value = true
@@ -116,6 +96,19 @@ class GameActivity : AbstractActivity2048(
 				)
 			}
 
+			Text(
+				"Score: ${gameInterface.score.value}",
+				fontSize = 40.sp,
+				color = MaterialTheme.colorScheme.secondary,
+				modifier = Modifier.padding(20.dp)
+			)
+
+			Row(
+				modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+				horizontalArrangement = Arrangement.Center,
+			){
+				gameInterface.GameInterfaceComposable()
+			}
 		}
 
 		val hasLost = gameInterface.playerHasLost.value
@@ -269,7 +262,7 @@ class GameActivity : AbstractActivity2048(
 		scoreDao.save(
 			gameInterface.score.value,
 			gameInterface.highestTile.value,
-			0,
+			gameInterface.timer.value,
 			gameInterface.movesTaken.value,
 			gameInterface.boardWidth,
 			gameInterface.boardHeight
