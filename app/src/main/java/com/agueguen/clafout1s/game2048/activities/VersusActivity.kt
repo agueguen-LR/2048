@@ -57,13 +57,16 @@ class VersusActivity : AbstractActivity2048(
 	private lateinit var player1: GameInterface
 	private lateinit var player2: GameInterface
 	private lateinit var buttonColors: ButtonColors
+	private lateinit var showLoseDialog: MutableState<Boolean>
 
 	@Composable
 	override fun ScreenContent(){
 		val context = LocalContext.current
+		
 		val tileSize = calculateTileSize(4, 4, 10.dp)
 		player1 = remember { GameInterface(4, 4) }
 		player2 = remember { GameInterface(4, 4) }
+		showLoseDialog = remember { mutableStateOf(false) }
 
 		buttonColors = ButtonColors(
 			MaterialTheme.colorScheme.primaryContainer,
@@ -84,11 +87,20 @@ class VersusActivity : AbstractActivity2048(
 				player2.GameInterfaceComposable(tileSize, 5.dp)
 			}
 
-			Text(
-				"P1↓: ${player1.score.value} | P2↑: ${player2.score.value}",
-				fontSize = 20.sp,
-				color = MaterialTheme.colorScheme.onPrimary,
-			)
+			if (intent.getBooleanExtra("timer", false)) {
+				Text(
+					"P1↓: ${player1.score.value} | P2↑: ${player2.score.value}",
+					fontSize = 20.sp,
+					color = MaterialTheme.colorScheme.onPrimary,
+				)
+			} else {
+				Text(
+					"${180 - player1.timer.value}",
+					fontSize = 20.sp,
+					color = MaterialTheme.colorScheme.onPrimary,
+				)
+			}
+
 
 			Row(
 				modifier = Modifier.fillMaxWidth().weight(1f),
@@ -98,13 +110,16 @@ class VersusActivity : AbstractActivity2048(
 			}
 		}
 
-		// val hasLost = gameInterface.playerHasLost.value
-		// val highestTile = gameInterface.highestTile.value
-		// LaunchedEffect(hasLost, highestTile) {
-		// 	if (hasLost || highestTile >= winCondition) {
-		// 		showEndDialog.value = true
-		// 	}
-		// }
+		if (showLoseDialog.value) {
+			LoseDialog()
+		}
+		val hasLost1 = player1.playerHasLost.value
+		val hasLost2 = player2.playerHasLost.value
+		LaunchedEffect(hasLost1, hasLost2) {
+			if (hasLost1 || hasLost2) {
+				showLoseDialog.value = true
+			}
+		}
 
 	}
 
@@ -161,6 +176,52 @@ class VersusActivity : AbstractActivity2048(
 		}
 
 		return tileSize
+	}
+
+	@Composable
+	private fun LoseDialog(){
+		val context = LocalContext.current
+		AlertDialog(
+			onDismissRequest = { showLoseDialog.value = false },
+			title = {
+				if(player1.playerHasLost.value) Text("Player 1 has lost, Player 2 wins !")
+				else Text("Player 2 has lost, Player 1 wins !")
+			},
+			text = {
+				Text("New Game ?")
+			},
+			confirmButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						player1.resetBoard()
+						player2.resetBoard()
+						showLoseDialog.value = false
+					}
+				) {
+					Text(
+						"New Game",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			},
+			dismissButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						showLoseDialog.value = false
+						context.startActivity(Intent(context, MainMenuActivity::class.java))
+					}
+				) {
+					Text(
+						"Main Menu",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			}
+		)
 	}
 }
 
