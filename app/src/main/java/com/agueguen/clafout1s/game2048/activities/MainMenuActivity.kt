@@ -76,7 +76,7 @@ class MainMenuActivity : AbstractActivity2048() {
 						listOf(MaterialTheme.colorScheme.onTertiary ,MaterialTheme.colorScheme.tertiary)
 					)
 				),
-				modifier = Modifier.padding(15.dp).fillMaxWidth(),
+				modifier = Modifier.padding(vertical=30.dp).fillMaxWidth(),
 				textAlign = TextAlign.Center,
 			)
 
@@ -124,7 +124,7 @@ class MainMenuActivity : AbstractActivity2048() {
 			onClick = onClick,
 			modifier = Modifier.padding(15.dp).fillMaxWidth().height(60.dp),
 			colors = ButtonColors(
-				MaterialTheme.colorScheme.surfaceBright,
+				MaterialTheme.colorScheme.primaryContainer,
 				MaterialTheme.colorScheme.primary,
 				MaterialTheme.colorScheme.errorContainer,
 				MaterialTheme.colorScheme.error

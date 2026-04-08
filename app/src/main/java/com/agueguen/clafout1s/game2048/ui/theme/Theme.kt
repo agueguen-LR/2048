@@ -18,34 +18,14 @@ val lightScheme = lightColorScheme(
     secondary = secondaryLight,
     onSecondary = onSecondaryLight,
     secondaryContainer = secondaryContainerLight,
-    onSecondaryContainer = onSecondaryContainerLight,
     tertiary = tertiaryLight,
     onTertiary = onTertiaryLight,
-    tertiaryContainer = tertiaryContainerLight,
-    onTertiaryContainer = onTertiaryContainerLight,
     error = errorLight,
     onError = onErrorLight,
     errorContainer = errorContainerLight,
     onErrorContainer = onErrorContainerLight,
     background = backgroundLight,
-    onBackground = onBackgroundLight,
-    surface = surfaceLight,
-    onSurface = onSurfaceLight,
-    surfaceVariant = surfaceVariantLight,
-    onSurfaceVariant = onSurfaceVariantLight,
-    outline = outlineLight,
-    outlineVariant = outlineVariantLight,
-    scrim = scrimLight,
-    inverseSurface = inverseSurfaceLight,
-    inverseOnSurface = inverseOnSurfaceLight,
-    inversePrimary = inversePrimaryLight,
-    surfaceDim = surfaceDimLight,
-    surfaceBright = surfaceBrightLight,
-    surfaceContainerLowest = surfaceContainerLowestLight,
-    surfaceContainerLow = surfaceContainerLowLight,
-    surfaceContainer = surfaceContainerLight,
-    surfaceContainerHigh = surfaceContainerHighLight,
-    surfaceContainerHighest = surfaceContainerHighestLight,
+    surface = surfaceLight
 )
 
 val darkScheme = darkColorScheme(
@@ -56,34 +36,32 @@ val darkScheme = darkColorScheme(
     secondary = secondaryDark,
     onSecondary = onSecondaryDark,
     secondaryContainer = secondaryContainerDark,
-    onSecondaryContainer = onSecondaryContainerDark,
     tertiary = tertiaryDark,
     onTertiary = onTertiaryDark,
-    tertiaryContainer = tertiaryContainerDark,
-    onTertiaryContainer = onTertiaryContainerDark,
     error = errorDark,
     onError = onErrorDark,
     errorContainer = errorContainerDark,
     onErrorContainer = onErrorContainerDark,
     background = backgroundDark,
-    onBackground = onBackgroundDark,
     surface = surfaceDark,
-    onSurface = onSurfaceDark,
-    surfaceVariant = surfaceVariantDark,
-    onSurfaceVariant = onSurfaceVariantDark,
-    outline = outlineDark,
-    outlineVariant = outlineVariantDark,
-    scrim = scrimDark,
-    inverseSurface = inverseSurfaceDark,
-    inverseOnSurface = inverseOnSurfaceDark,
-    inversePrimary = inversePrimaryDark,
-    surfaceDim = surfaceDimDark,
-    surfaceBright = surfaceBrightDark,
-    surfaceContainerLowest = surfaceContainerLowestDark,
-    surfaceContainerLow = surfaceContainerLowDark,
-    surfaceContainer = surfaceContainerDark,
-    surfaceContainerHigh = surfaceContainerHighDark,
-    surfaceContainerHighest = surfaceContainerHighestDark,
+)
+
+val lightSchemeColor = lightColorScheme(
+    primary = primaryLightColor,
+    onPrimary = onPrimaryLightColor,
+    primaryContainer = primaryContainerLightColor,
+    onPrimaryContainer = onPrimaryContainerLightColor,
+    secondary = secondaryLightColor,
+    onSecondary = onSecondaryLightColor,
+    secondaryContainer = secondaryContainerLightColor,
+    tertiary = tertiaryLightColor,
+    onTertiary = onTertiaryLightColor,
+    error = errorLightColor,
+    onError = onErrorLightColor,
+    errorContainer = errorContainerLightColor,
+    onErrorContainer = onErrorContainerLightColor,
+    background = backgroundLightColor,
+    surface = surfaceLightColor
 )
 
 
@@ -104,6 +82,7 @@ fun AppTheme(
 	val colors = when (theme) {
 		null, 0 -> lightScheme
 		1 -> darkScheme
+        2 -> lightSchemeColor
 		else -> lightScheme // fallback
 	}
 

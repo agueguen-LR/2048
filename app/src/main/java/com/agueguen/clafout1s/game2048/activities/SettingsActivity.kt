@@ -43,6 +43,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.lightScheme
 import com.agueguen.clafout1s.game2048.ui.theme.darkScheme
 import com.agueguen.clafout1s.game2048.database.UserSettings
 import com.agueguen.clafout1s.game2048.database.UserSettingsDao
+import com.agueguen.clafout1s.game2048.ui.theme.lightSchemeColor
 
 class SettingsActivity : AbstractActivity2048() {
 	lateinit var userSettingsDao: UserSettingsDao
@@ -175,7 +176,8 @@ class SettingsActivity : AbstractActivity2048() {
 
 		val themes = listOf(
 			lightScheme.primary to lightScheme.background,
-			darkScheme.primary to darkScheme.background
+			darkScheme.primary to darkScheme.background,
+            lightSchemeColor.primary to lightSchemeColor.background
 			// Add more themes if needed
 		)
 
