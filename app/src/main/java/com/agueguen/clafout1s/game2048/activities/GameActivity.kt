@@ -40,6 +40,8 @@ import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 import com.agueguen.clafout1s.game2048.utilities.stateListToByteArray
+import com.agueguen.clafout1s.game2048.AudioManager
+import com.agueguen.clafout1s.game2048.R
 
 class GameActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 50.dp, bottom = 20.dp)
@@ -53,6 +55,7 @@ class GameActivity : AbstractActivity2048(
 	@Composable
 	override fun ScreenContent(){
 		val saveStateDao = AppDatabase.getDatabase(this).saveStateDao()
+		val context = LocalContext.current
 		if (intent.getBooleanExtra("continue", false)) {
 			gameInterface = remember { GameInterface(saveStateDao.get(0)!!) }
 		} else {
@@ -102,6 +105,7 @@ class GameActivity : AbstractActivity2048(
 			Button(
 				modifier = Modifier.padding(10.dp),
 				onClick = {
+					AudioManager.playSound(context, R.raw.click)
 					showResetDialog.value = true
 				}
 			){

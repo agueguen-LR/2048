@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+import com.agueguen.clafout1s.game2048.AudioManager
+import com.agueguen.clafout1s.game2048.R
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
@@ -76,18 +78,24 @@ class MainMenuActivity : AbstractActivity2048() {
 				if (continueSaveState.value != null) {
 					menuButton("CONTINUE", onClick = { 
 						gameActivityIntent.putExtra("continue", true)
+						AudioManager.playSound(context, R.raw.click)
 						context.startActivity(gameActivityIntent)
 					})
 				}
 				menuButton("START", onClick = { 
+					AudioManager.playSound(context, R.raw.click)
 					if (userSettings!!.optionalFeatures) {
 						showGridSizeDialog.value = true
-					} else context.startActivity(gameActivityIntent)
+					} else {
+						context.startActivity(gameActivityIntent)
+					}
 				})
 				menuButton("SCOREBOARD",onClick = {
+					AudioManager.playSound(context, R.raw.click)
 					context.startActivity(Intent(context, ScoreboardActivity::class.java))
 				})
 				menuButton("SETTINGS", onClick = {
+					AudioManager.playSound(context, R.raw.click)
 					context.startActivity(Intent(context, SettingsActivity::class.java))
 				})
 
