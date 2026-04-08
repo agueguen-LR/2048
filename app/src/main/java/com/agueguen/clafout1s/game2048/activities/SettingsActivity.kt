@@ -82,7 +82,7 @@ class SettingsActivity : AbstractActivity2048() {
 				.weight(1f)
 				.wrapContentHeight(align = Alignment.CenterVertically),
 				textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimary
+				color = MaterialTheme.colorScheme.onPrimary
 			)
 
 			Column(
@@ -175,9 +175,9 @@ class SettingsActivity : AbstractActivity2048() {
 		val outlineColor = MaterialTheme.colorScheme.onPrimary
 
 		val themes = listOf(
-			lightScheme.primary to lightScheme.background,
-			darkScheme.primary to darkScheme.background,
-            lightSchemeColor.primary to lightSchemeColor.background
+			lightScheme.secondaryContainer to lightScheme.background,
+			darkScheme.secondaryContainer to darkScheme.background,
+			lightSchemeColor.secondaryContainer to lightSchemeColor.background
 			// Add more themes if needed
 		)
 
@@ -185,7 +185,7 @@ class SettingsActivity : AbstractActivity2048() {
 			horizontalArrangement = Arrangement.spacedBy(16.dp),
 			modifier = Modifier.padding(16.dp)
 		) {
-			themes.forEachIndexed { index, (primary, background) ->
+			themes.forEachIndexed { index, (secondaryContainer, background) ->
 				Box(
 					modifier = Modifier
 					.size(50.dp)
@@ -206,7 +206,7 @@ class SettingsActivity : AbstractActivity2048() {
 					Box(
 						modifier = Modifier
 						.size(25.dp)
-						.background(primary, CircleShape)
+						.background(secondaryContainer, CircleShape)
 					)
 				}
 			}
