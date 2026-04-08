@@ -112,7 +112,7 @@ class MainMenuActivity : AbstractActivity2048() {
 			Column(modifier = Modifier.weight(0.5F)) { }
 
 			if (showGridSizeDialog.value) {
-				gridSizeDialog(context, gameActivityIntent)
+				GridSizeDialog(context, gameActivityIntent)
 			}
 		}
 	}
