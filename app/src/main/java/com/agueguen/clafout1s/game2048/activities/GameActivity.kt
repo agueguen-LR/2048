@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,11 +30,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.Lifecycle
 
 import com.agueguen.clafout1s.game2048.GameInterface
 import com.agueguen.clafout1s.game2048.database.AppDatabase
+import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
+import com.agueguen.clafout1s.game2048.utilities.stateListToByteArray
 
 class GameActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 50.dp, bottom = 20.dp)
@@ -46,10 +52,16 @@ class GameActivity : AbstractActivity2048(
 
 	@Composable
 	override fun ScreenContent(){
-		gameInterface = remember { GameInterface(
-			intent.getIntExtra("width", 4),
-			intent.getIntExtra("height", 4)
-		)}
+		val saveStateDao = AppDatabase.getDatabase(this).saveStateDao()
+		if (intent.getBooleanExtra("continue", false)) {
+			gameInterface = remember { GameInterface(saveStateDao.get(0)!!) }
+		} else {
+			gameInterface = remember { GameInterface(
+				intent.getIntExtra("width", 4),
+				intent.getIntExtra("height", 4)
+			)}
+		}
+
 		winCondition = when (gameInterface.boardWidth * gameInterface.boardHeight) {
 			9 -> 6 // 3*3 goal is 64
 			16 -> 11 // 4*4 goal is 2048
@@ -106,6 +118,29 @@ class GameActivity : AbstractActivity2048(
 		if (showResetDialog.value) ResetGridDialog()
 		if (showSaveScoreDialog.value) SaveScoreDialog()
 		if (showEndDialog.value) EndGameDialog()
+
+		val lifecycleOwner = LocalLifecycleOwner.current
+		DisposableEffect(lifecycleOwner) {
+			val observer = LifecycleEventObserver { _, event -> 
+				when (event) {
+					Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP -> {
+						saveStateDao.create(SaveState(
+							0, // this activity uses saveState slot 0
+							stateListToByteArray(gameInterface.gameBoard.getGameGrid().data),
+							gameInterface.boardHeight,
+							gameInterface.boardWidth
+						))
+					}
+					else -> {}
+				}
+			}
+
+			lifecycleOwner.lifecycle.addObserver(observer)
+
+			onDispose {
+				lifecycleOwner.lifecycle.removeObserver(observer)
+			}
+		}
 	}
 
 	@Composable

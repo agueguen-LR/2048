@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -41,16 +42,11 @@ class MainMenuActivity : AbstractActivity2048() {
 	@Composable
 	override fun ScreenContent(){
 		showGridSizeDialog = remember { mutableStateOf(false) }
-		val commonModifierBases = Modifier.padding(15.dp).fillMaxWidth()
-		val buttonModifiers = commonModifierBases.height(80.dp)
 		val context = LocalContext.current
 		val gameActivityIntent = Intent(context, GameActivity::class.java)
-		val buttonColors = ButtonColors(
-			MaterialTheme.colorScheme.surfaceBright,
-			MaterialTheme.colorScheme.primary,
-			MaterialTheme.colorScheme.errorContainer,
-			MaterialTheme.colorScheme.error)
-		val userSettings = AppDatabase.getDatabase(context).userSettingsDao().getUserSettings()
+		val database = AppDatabase.getDatabase(context)
+		val userSettings = database.userSettingsDao().getUserSettings()
+		val continueSaveState = database.saveStateDao().getAsFlow(0).collectAsState(initial = null)
 
 		Column (
 			modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
@@ -63,48 +59,61 @@ class MainMenuActivity : AbstractActivity2048() {
 				fontWeight = FontWeight.Bold,
 				style = TextStyle(
 					brush = Brush.linearGradient(
-						listOf(MaterialTheme.colorScheme.primary ,MaterialTheme.colorScheme.inversePrimary)
+						listOf(
+							MaterialTheme.colorScheme.primary,
+							MaterialTheme.colorScheme.inversePrimary
+						)
 					)
 				),
-				modifier = commonModifierBases.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
+				modifier = Modifier.padding(15.dp).fillMaxWidth()
+				.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
 				textAlign = TextAlign.Center,
 			)
+
 			Column(verticalArrangement = Arrangement.SpaceEvenly,
 				modifier = Modifier.weight(2F)
 			) {
-				Button(
-					onClick = { 
-						if (userSettings!!.optionalFeatures) {
-							showGridSizeDialog.value = true
-						} else context.startActivity(gameActivityIntent)
-					},
-					modifier = buttonModifiers,
-					colors = buttonColors
-				) {
-					Text("START", fontFamily = blockyFont,
-						fontWeight = FontWeight.Light, fontSize = 40.sp)
+				if (continueSaveState.value != null) {
+					menuButton("CONTINUE", onClick = { 
+						gameActivityIntent.putExtra("continue", true)
+						context.startActivity(gameActivityIntent)
+					})
 				}
-				Button(
-					onClick = { context.startActivity(Intent(context, ScoreboardActivity::class.java))},
-					modifier = buttonModifiers,
-					colors = buttonColors
-				){
-					Text("SCOREBOARD", fontFamily = blockyFont,
-						fontWeight = FontWeight.Light, fontSize = 40.sp)
-				}
-				Button(
-					onClick = { context.startActivity(Intent(context, SettingsActivity::class.java))},
-					modifier = buttonModifiers,
-					colors = buttonColors
-				){
-					Text("SETTINGS", fontFamily = blockyFont,
-						fontWeight = FontWeight.Light, fontSize = 40.sp)
-				}
+				menuButton("START", onClick = { 
+					if (userSettings!!.optionalFeatures) {
+						showGridSizeDialog.value = true
+					} else context.startActivity(gameActivityIntent)
+				})
+				menuButton("SCOREBOARD",onClick = {
+					context.startActivity(Intent(context, ScoreboardActivity::class.java))
+				})
+				menuButton("SETTINGS", onClick = {
+					context.startActivity(Intent(context, SettingsActivity::class.java))
+				})
+
 			}
 			Column(modifier = Modifier.weight(0.5F)) { }
-		}
 
-		if (showGridSizeDialog.value) gridSizeDialog(context, gameActivityIntent)
+			if (showGridSizeDialog.value) gridSizeDialog(context, gameActivityIntent)
+		}
+	}
+
+
+	@Composable
+	private fun menuButton(text: String, onClick: () -> Unit) {
+		Button(
+			onClick = onClick,
+			modifier = Modifier.padding(15.dp).fillMaxWidth().height(60.dp),
+			colors = ButtonColors(
+				MaterialTheme.colorScheme.surfaceBright,
+				MaterialTheme.colorScheme.primary,
+				MaterialTheme.colorScheme.errorContainer,
+				MaterialTheme.colorScheme.error
+			)
+		){
+			Text(text, fontFamily = blockyFont,
+			fontWeight = FontWeight.Light, fontSize = 40.sp)
+		}
 	}
 
 	@Composable
@@ -152,3 +161,4 @@ class MainMenuActivity : AbstractActivity2048() {
 		}
 	}
 }
+
