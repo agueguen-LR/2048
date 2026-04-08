@@ -11,6 +11,9 @@
             android:name=".activities.GameActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.VersusActivity"
+            android:exported="false"/>
+        <activity
             android:name=".activities.ScoreboardActivity"
             android:exported="false"/>
         <activity

@@ -1,0 +1,166 @@
+package com.agueguen.clafout1s.game2048.activities
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.Lifecycle
+
+import com.agueguen.clafout1s.game2048.GameInterface
+import com.agueguen.clafout1s.game2048.database.AppDatabase
+import com.agueguen.clafout1s.game2048.database.SaveState
+import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
+import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
+import com.agueguen.clafout1s.game2048.utilities.stateListToByteArray
+import com.agueguen.clafout1s.game2048.AudioManager
+import com.agueguen.clafout1s.game2048.R
+
+class VersusActivity : AbstractActivity2048(
+	modifier = Modifier.fillMaxSize().focusable().padding(top = 40.dp, bottom = 50.dp)
+) {
+	private lateinit var player1: GameInterface
+	private lateinit var player2: GameInterface
+	private lateinit var buttonColors: ButtonColors
+
+	@Composable
+	override fun ScreenContent(){
+		val context = LocalContext.current
+		val tileSize = calculateTileSize(4, 4, 10.dp)
+		player1 = remember { GameInterface(4, 4) }
+		player2 = remember { GameInterface(4, 4) }
+
+		buttonColors = ButtonColors(
+			MaterialTheme.colorScheme.primaryContainer,
+			MaterialTheme.colorScheme.primary,
+			MaterialTheme.colorScheme.errorContainer,
+			MaterialTheme.colorScheme.error
+		)
+
+		Column(
+			modifier = Modifier.fillMaxHeight(),
+			horizontalAlignment = Alignment.CenterHorizontally,
+		) {
+
+			Row(
+				modifier = Modifier.fillMaxWidth().weight(1f).graphicsLayer { scaleX = -1f; scaleY = -1f },
+				horizontalArrangement = Arrangement.Center,
+			){
+				player2.GameInterfaceComposable(tileSize, 5.dp)
+			}
+
+			Text(
+				"P1↓: ${player1.score.value} | P2↑: ${player2.score.value}",
+				fontSize = 20.sp,
+				color = MaterialTheme.colorScheme.onPrimary,
+			)
+
+			Row(
+				modifier = Modifier.fillMaxWidth().weight(1f),
+				horizontalArrangement = Arrangement.Center,
+			){
+				player1.GameInterfaceComposable(tileSize, 5.dp)
+			}
+		}
+
+		// val hasLost = gameInterface.playerHasLost.value
+		// val highestTile = gameInterface.highestTile.value
+		// LaunchedEffect(hasLost, highestTile) {
+		// 	if (hasLost || highestTile >= winCondition) {
+		// 		showEndDialog.value = true
+		// 	}
+		// }
+
+	}
+
+	@Composable
+	fun calculateTileSize(
+		boardWidth: Int,
+		boardHeight: Int,
+		marginSize: Dp
+	): Dp {
+		var screenHeight = LocalWindowInfo.current.containerSize.height
+		val screenWidth = LocalWindowInfo.current.containerSize.width
+
+		val marginNbX = boardWidth + 3
+		val marginNbY = boardHeight + 3
+
+		var tileSize: Dp = 80.dp
+
+		val density = LocalDensity.current
+
+		val totalWidthPx = with(density) {
+			boardWidth * tileSize.toPx() + marginNbX * marginSize.toPx()
+		}
+
+		val totalHeightPx = with(density) {
+			boardHeight * tileSize.toPx() + marginNbY * marginSize.toPx()
+		}
+
+		tileSize = when {
+			totalWidthPx > screenWidth && totalHeightPx > screenHeight -> {
+				if (totalWidthPx >= totalHeightPx) {
+					with(density) {
+						((screenWidth - marginNbX * marginSize.toPx()) / boardWidth).toDp()
+					}
+				} else {
+					with(density) {
+						((screenHeight - marginNbY * marginSize.toPx()) / boardHeight).toDp()
+					}
+				}
+			}
+
+			totalWidthPx > screenWidth -> {
+				with(density) {
+					((screenWidth - marginNbX * marginSize.toPx()) / boardWidth).toDp()
+				}
+			}
+
+			totalHeightPx > screenHeight -> {
+				with(density) {
+					((screenHeight - marginNbY * marginSize.toPx()) / boardHeight).toDp()
+				}
+			}
+
+			else -> tileSize
+		}
+
+		return tileSize
+	}
+}
+

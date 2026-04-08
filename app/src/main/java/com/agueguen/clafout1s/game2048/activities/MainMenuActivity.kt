@@ -99,6 +99,12 @@ class MainMenuActivity : AbstractActivity2048() {
 						context.startActivity(gameActivityIntent)
 					}
 				})
+				if (userSettings!!.optionalFeatures) {
+					menuButton("VERSUS", onClick = {
+						AudioManager.playSound(context, R.raw.click)
+						context.startActivity(Intent(context, VersusActivity::class.java))
+					})
+				}
 				menuButton("SCOREBOARD",onClick = {
 					AudioManager.playSound(context, R.raw.click)
 					context.startActivity(Intent(context, ScoreboardActivity::class.java))
