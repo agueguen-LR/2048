@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.Delete
 import androidx.room.OnConflictStrategy
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SaveStateDao {
@@ -19,7 +20,14 @@ interface SaveStateDao {
 	 * Get the SaveState with the specified id.
 	 */
 	@Query("SELECT * FROM savestate WHERE id = :id")
-	fun get(id: Int): SaveState
+	fun get(id: Int): SaveState?
+
+	/**
+	 * Get the SaveState with the specified id.
+	 * Returns the result as a Flow
+	 */
+	@Query("SELECT * FROM savestate WHERE id = :id")
+	fun getAsFlow(id: Int): Flow<SaveState?>
 
 	/**
 	 * Delete the SaveState
