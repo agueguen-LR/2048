@@ -84,7 +84,8 @@ class GameInterface(
 
  	@Composable
 	fun GameInterfaceComposable(tileSize: Dp, marginSize: Dp){
-
+		val context = LocalContext.current
+		var dragEnded = remember { mutableStateOf(true) }
 		Box(modifier = Modifier.padding(marginSize)){
 			LazyHorizontalGrid(
 				rows = GridCells.Fixed(boardWidth),
@@ -92,6 +93,17 @@ class GameInterface(
 				verticalArrangement = Arrangement.spacedBy(marginSize),
 				modifier = Modifier
 				.height(tileSize * boardHeight + marginSize * (boardHeight-1))
+				.pointerInput(Unit) {
+				//TODO this should be on the grid rather than the tiles
+				// but there are detection issues, cause the tiles cover the grid
+				detectDragGestures(
+					onDragStart = { dragEnded.value = false },
+					onDragEnd = { dragEnded.value = true }
+				) { _, dragAmount ->
+					handleDragGesture(context, dragAmount, dragEnded)
+				}
+			}
+
 			) {
 				items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
 			}

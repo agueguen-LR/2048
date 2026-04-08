@@ -110,18 +110,19 @@ class VersusActivity : AbstractActivity2048(
 			}
 		}
 
-		if (showTimeUpDialog.value) {
-			TimeUpDialog()
-		} else {
-			_2048Dialog()
-		}
 		if (intent.getBooleanExtra("timer", false)) {
+			if (showTimeUpDialog.value) {
+				TimeUpDialog()
+			} 
 			LaunchedEffect(player1.timer.value) {
 				if (180 - player1.timer.value <= 0) {
 					showTimeUpDialog.value = true
 				}
 			}
 		} else {
+			if (show2048Dialog.value) {
+				_2048Dialog()
+			}
 			LaunchedEffect(player1.score.value, player2.score.value) {
 				if (player1.highestTile.value >= 11 || player2.highestTile.value >= 11) {
 					show2048Dialog.value = true
@@ -255,6 +256,7 @@ class VersusActivity : AbstractActivity2048(
 					onClick = {
 						player1.resetBoard()
 						player2.resetBoard()
+						player1.timer.value = 0
 						showTimeUpDialog.value = false
 					}
 				) {
