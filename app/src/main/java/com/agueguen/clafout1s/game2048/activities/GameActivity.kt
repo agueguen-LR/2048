@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +53,7 @@ class GameActivity : AbstractActivity2048(
 	private lateinit var showResetDialog: MutableState<Boolean>
 	private lateinit var showSaveScoreDialog: MutableState<Boolean>
 	private var winCondition: Byte = 11 // 2048
+    private lateinit var buttonColors: ButtonColors
 
 	@Composable
 	override fun ScreenContent(){
@@ -64,6 +67,14 @@ class GameActivity : AbstractActivity2048(
 				intent.getIntExtra("height", 4)
 			)}
 		}
+
+		// Is always gonna be initialized before the alerts, since this is the only public function
+		buttonColors = ButtonColors(
+			MaterialTheme.colorScheme.primaryContainer,
+			MaterialTheme.colorScheme.primary,
+			MaterialTheme.colorScheme.errorContainer,
+			MaterialTheme.colorScheme.error
+		)
 
 		winCondition = when (gameInterface.boardWidth * gameInterface.boardHeight) {
 			9 -> 6 // 3*3 goal is 64
@@ -84,6 +95,7 @@ class GameActivity : AbstractActivity2048(
 
 			Button(
 				modifier = Modifier.padding(20.dp),
+				colors = buttonColors,
 				onClick = {
 					AudioManager.playSound(context, R.raw.click)
 					showResetDialog.value = true
@@ -99,7 +111,7 @@ class GameActivity : AbstractActivity2048(
 			Text(
 				"Score: ${gameInterface.score.value}",
 				fontSize = 40.sp,
-				color = MaterialTheme.colorScheme.secondary,
+				color = MaterialTheme.colorScheme.onPrimary,
 				modifier = Modifier.padding(20.dp)
 			)
 
@@ -166,6 +178,7 @@ class GameActivity : AbstractActivity2048(
 			confirmButton = {
 				if(win) {
 					Button(
+						colors = buttonColors,
 						onClick = {
 							saveCurrentScore()
 							context.startActivity(Intent(context, ScoreboardActivity::class.java))
@@ -177,6 +190,7 @@ class GameActivity : AbstractActivity2048(
 				}
 				else{
 					Button(
+						colors = buttonColors,
 						onClick = {
 							saveCurrentScore()
 							context.startActivity(Intent(context, ScoreboardActivity::class.java))
@@ -189,6 +203,7 @@ class GameActivity : AbstractActivity2048(
 			},
 			dismissButton = {
 				Button(
+					colors = buttonColors,
 					onClick = {
 						showEndDialog.value = false
 					}
@@ -209,6 +224,7 @@ class GameActivity : AbstractActivity2048(
 			text = { Text("Do you really want to reset the grid ?") },
 			confirmButton = {
 				Button(
+					colors = buttonColors,
 					onClick = {
 						showResetDialog.value = false
 						showSaveScoreDialog.value = true
@@ -217,6 +233,7 @@ class GameActivity : AbstractActivity2048(
 			},
 			dismissButton = {
 				Button(
+					colors = buttonColors,
 					onClick = { showResetDialog.value = false }
 				) { Text("No",fontFamily = blockyFont, fontWeight = FontWeight.Bold) }
 			}
@@ -237,6 +254,7 @@ class GameActivity : AbstractActivity2048(
 			text = { Text("Do you want to save your current score in the scoreboard ?") },
 			confirmButton = {
 				Button(
+					colors = buttonColors,
 					onClick = {
 						saveCurrentScore()
 						gameInterface.resetBoard()
@@ -246,6 +264,7 @@ class GameActivity : AbstractActivity2048(
 			},
 			dismissButton = {
 				Button(
+					colors = buttonColors,
 					onClick = { 
 						gameInterface.resetBoard()
 						showSaveScoreDialog.value = false 
