@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,7 @@ import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
 class MainMenuActivity : AbstractActivity2048() {
 	private lateinit var showGridSizeDialog: MutableState<Boolean>
+	private lateinit var showVersusDialog: MutableState<Boolean>
 	private lateinit var buttonColors: ButtonColors
 
 	@Composable
@@ -56,6 +58,7 @@ class MainMenuActivity : AbstractActivity2048() {
 	override fun ScreenContent(){
 		InitColors()
 		showGridSizeDialog = remember { mutableStateOf(false) }
+		showVersusDialog = remember { mutableStateOf(false) }
 		val context = LocalContext.current
 		val gameActivityIntent = Intent(context, GameActivity::class.java)
 		val database = AppDatabase.getDatabase(context)
@@ -120,6 +123,9 @@ class MainMenuActivity : AbstractActivity2048() {
 			if (showGridSizeDialog.value) {
 				GridSizeDialog(context, gameActivityIntent)
 			}
+			if (showVersusDialog.value) {
+				VersusDialog(context, gameActivityIntent)
+			}
 		}
 	}
 
@@ -173,6 +179,61 @@ class MainMenuActivity : AbstractActivity2048() {
 			}
 		}
 	}
+
+	@Composable
+	private fun VersusDialog(context: Context, intent: Intent) {
+		Dialog(
+			onDismissRequest = {
+				showVersusDialog.value = false
+			}
+		) {
+			Card(
+				modifier = Modifier
+				.fillMaxWidth()
+				.height(300.dp)
+				.padding(12.dp),
+				shape = RoundedCornerShape(16.dp)
+			) {
+				Column(
+					modifier = Modifier.fillMaxSize(),
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					Text(
+						"Time trial, or first to 2048 ?",
+						textAlign = TextAlign.Center
+					)
+					Spacer(modifier = Modifier.height(16.dp))
+					Row(
+						horizontalArrangement = Arrangement.SpaceEvenly,
+						modifier = Modifier.fillMaxWidth()
+					) {
+						Button(
+							colors = buttonColors,
+							onClick = {
+								intent.putExtra("timer", true)
+								showVersusDialog.value = false
+								context.startActivity(intent)
+							}
+						) {
+							Text("Time Trial")
+						}
+						Button(
+							colors = buttonColors,
+							onClick = {
+								showVersusDialog.value = false
+								context.startActivity(intent)
+							}
+						) {
+							Text("2048")
+						}
+					}
+
+				}
+			}
+		}
+	}
+
 
 	@Composable
 	private fun GridSizeButton(size: Int, context: Context, intent: Intent) {
