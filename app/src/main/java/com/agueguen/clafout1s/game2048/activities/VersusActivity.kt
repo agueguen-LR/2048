@@ -58,6 +58,7 @@ class VersusActivity : AbstractActivity2048(
 	private lateinit var player2: GameInterface
 	private lateinit var buttonColors: ButtonColors
 	private lateinit var showLoseDialog: MutableState<Boolean>
+	private lateinit var showTimeUpDialog: MutableState<Boolean>
 
 	@Composable
 	override fun ScreenContent(){
@@ -67,6 +68,7 @@ class VersusActivity : AbstractActivity2048(
 		player1 = remember { GameInterface(4, 4) }
 		player2 = remember { GameInterface(4, 4) }
 		showLoseDialog = remember { mutableStateOf(false) }
+		showTimeUpDialog = remember { mutableStateOf(false) }
 
 		buttonColors = ButtonColors(
 			MaterialTheme.colorScheme.primaryContainer,
@@ -89,13 +91,13 @@ class VersusActivity : AbstractActivity2048(
 
 			if (intent.getBooleanExtra("timer", false)) {
 				Text(
-					"P1↓: ${player1.score.value} | P2↑: ${player2.score.value}",
+					"P1↓: ${player1.score.value} | ${180 - player1.timer.value} | P2↑: ${player2.score.value}",
 					fontSize = 20.sp,
 					color = MaterialTheme.colorScheme.onPrimary,
 				)
 			} else {
 				Text(
-					"${180 - player1.timer.value}",
+					"P1↓: ${player1.score.value} | P2↑: ${player2.score.value}",
 					fontSize = 20.sp,
 					color = MaterialTheme.colorScheme.onPrimary,
 				)
@@ -118,6 +120,17 @@ class VersusActivity : AbstractActivity2048(
 		LaunchedEffect(hasLost1, hasLost2) {
 			if (hasLost1 || hasLost2) {
 				showLoseDialog.value = true
+			}
+		}
+
+		if (showTimeUpDialog.value) {
+			TimeUpDialog()
+		}
+		if (intent.getBooleanExtra("timer", false)) {
+			LaunchedEffect(player1.timer.value) {
+				if (180 - player1.timer.value <= 0) {
+					showTimeUpDialog.value = true
+				}
 			}
 		}
 
@@ -223,5 +236,57 @@ class VersusActivity : AbstractActivity2048(
 			}
 		)
 	}
+
+	@Composable
+	private fun TimeUpDialog(){
+		val context = LocalContext.current
+		AlertDialog(
+			onDismissRequest = { showTimeUpDialog.value = false },
+			title = {
+				Text("Time's up !")
+			},
+			text = {
+				if (player1.score.value > player2.score.value) {
+					Text("Player 1 wins with ${player1.score.value} points !")
+				} else if (player2.score.value > player1.score.value) {
+					Text("Player 2 wins with ${player2.score.value} points !")
+				} else {
+					Text("It's a tie with ${player1.score.value} points each !")
+				}
+			},
+			confirmButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						player1.resetBoard()
+						player2.resetBoard()
+						showLoseDialog.value = false
+					}
+				) {
+					Text(
+						"New Game",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			},
+			dismissButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						showLoseDialog.value = false
+						context.startActivity(Intent(context, MainMenuActivity::class.java))
+					}
+				) {
+					Text(
+						"Main Menu",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			}
+		)
+	}
+
 }
 

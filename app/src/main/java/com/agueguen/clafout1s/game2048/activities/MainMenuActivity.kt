@@ -105,7 +105,7 @@ class MainMenuActivity : AbstractActivity2048() {
 				if (userSettings!!.optionalFeatures) {
 					menuButton("VERSUS", onClick = {
 						AudioManager.playSound(context, R.raw.click)
-						context.startActivity(Intent(context, VersusActivity::class.java))
+						showVersusDialog.value = true
 					})
 				}
 				menuButton("SCOREBOARD",onClick = {
@@ -124,7 +124,7 @@ class MainMenuActivity : AbstractActivity2048() {
 				GridSizeDialog(context, gameActivityIntent)
 			}
 			if (showVersusDialog.value) {
-				VersusDialog(context, gameActivityIntent)
+				VersusDialog(context, Intent(context, VersusActivity::class.java))
 			}
 		}
 	}
