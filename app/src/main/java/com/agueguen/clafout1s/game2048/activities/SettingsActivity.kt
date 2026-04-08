@@ -1,6 +1,6 @@
 package com.agueguen.clafout1s.game2048.activities
 
-import android.os.Bundle
+import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,11 +29,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.agueguen.clafout1s.game2048.AudioManager
+import com.agueguen.clafout1s.game2048.R
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.lightScheme
@@ -49,6 +52,7 @@ class SettingsActivity : AbstractActivity2048() {
 		userSettingsDao = AppDatabase.getDatabase(this).userSettingsDao()
 		val userSettingsState = remember { mutableStateOf(userSettingsDao.getUserSettings()) }
 		val userSettings = userSettingsState.value!!
+		val context = LocalContext.current
 
 		val buttonModifiers = Modifier
 		.padding(15.dp)
@@ -80,6 +84,7 @@ class SettingsActivity : AbstractActivity2048() {
 				// Animations toggle
 				Button(
 					onClick = {
+						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(animations = !userSettings.animations)
 						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
@@ -96,6 +101,7 @@ class SettingsActivity : AbstractActivity2048() {
 				// Music toggle
 				Button(
 					onClick = {
+						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(music = !userSettings.music)
 						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
@@ -112,6 +118,7 @@ class SettingsActivity : AbstractActivity2048() {
 				// Sound FX toggle
 				Button(
 					onClick = {
+						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(soundFX = !userSettings.soundFX)
 						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
@@ -128,6 +135,7 @@ class SettingsActivity : AbstractActivity2048() {
 				// Optional features toggle
 				Button(
 					onClick = {
+						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(optionalFeatures = !userSettings.optionalFeatures)
 						userSettingsState.value = updated
 						userSettingsDao.insert(updated)
@@ -141,7 +149,7 @@ class SettingsActivity : AbstractActivity2048() {
 					)
 				}
 
-				ThemePicker(userSettingsState)
+				ThemePicker(context, userSettingsState)
 			}
 
 			Column(modifier = Modifier.weight(0.5f)) {}
@@ -150,7 +158,7 @@ class SettingsActivity : AbstractActivity2048() {
 	}
 
 	@Composable
-	fun ThemePicker(userSettingsState: MutableState<UserSettings?>) {
+	fun ThemePicker(context: Context, userSettingsState: MutableState<UserSettings?>) {
 		val userSettings = userSettingsState.value!!
 		val outlineColor = MaterialTheme.colorScheme.secondary
 
@@ -175,6 +183,7 @@ class SettingsActivity : AbstractActivity2048() {
 						shape = CircleShape
 					)
 					.clickable {
+						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(theme = index)
 						userSettingsState.value = updated
 						userSettingsDao.insert(updated)

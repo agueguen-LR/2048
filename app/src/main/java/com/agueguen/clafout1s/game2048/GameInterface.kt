@@ -141,6 +141,7 @@ class GameInterface(
 		tileSize: Dp,
 	) {
 		var dragEnded = remember { mutableStateOf(true) }
+		val context = LocalContext.current
 		Box(
 			contentAlignment = Alignment.Center,
 			modifier = Modifier
@@ -155,7 +156,7 @@ class GameInterface(
 					onDragStart = { dragEnded.value = false },
 					onDragEnd = { dragEnded.value = true }
 				) { _, dragAmount ->
-					handleDragGesture(dragAmount, dragEnded)
+					handleDragGesture(context, dragAmount, dragEnded)
 				}
 			}
 		) {
@@ -186,6 +187,7 @@ class GameInterface(
 	 * @param dragEnded A mutable state that indicates whether the drag has ended to prevent multiple detections during a single drag.
 	 */
 	private fun handleDragGesture(
+		context: Context,
 		dragAmount: Offset,
 		dragEnded: MutableState<Boolean>
 	) {
@@ -198,17 +200,21 @@ class GameInterface(
 			// Perform the swipe actions based on the drag direction
 			if (horizontalMove && dragAmount.x > dragDetectionMin) {
 				movesTaken.value++
+				AudioManager.playSound(context, R.raw.swipe)
 				playerHasLost.value = !gameBoard.swipeLeft()
 				score.value = getGridScore()
 			} else if (horizontalMove && dragAmount.x < -dragDetectionMin) {
+				AudioManager.playSound(context, R.raw.swipe)
 				movesTaken.value++
 				playerHasLost.value = !gameBoard.swipeRight()
 				score.value = getGridScore()
 			} else if (!horizontalMove && dragAmount.y > dragDetectionMin) {
+				AudioManager.playSound(context, R.raw.swipe)
 				movesTaken.value++
 				playerHasLost.value = !gameBoard.swipeDown()
 				score.value = getGridScore()
 			} else if (!horizontalMove && dragAmount.y < -dragDetectionMin) {
+				AudioManager.playSound(context, R.raw.swipe)
 				movesTaken.value++
 				playerHasLost.value = !gameBoard.swipeUp()
 				score.value = getGridScore()
