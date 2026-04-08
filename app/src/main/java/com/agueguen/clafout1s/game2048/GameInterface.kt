@@ -64,22 +64,18 @@ class GameInterface(
 ) {
 
 	var gameBoard by mutableStateOf(GameBoard(boardWidth, boardHeight))
-	private lateinit var movesTaken: MutableState<Long>
-	private lateinit var score: MutableState<Long>
-	private lateinit var playerHasLost: MutableState<Boolean>
-	private lateinit var highestTile: MutableState<Byte>
+	val score = mutableStateOf(0L)
+	val movesTaken = mutableStateOf(0L)
+	val playerHasLost = mutableStateOf(false)
+	val highestTile = mutableStateOf(1.toByte())
 
 	constructor(saveState: SaveState): this(saveState.boardLength, saveState.boardHeight) {
 		gameBoard = GameBoard(saveState)
+		score.value = getGridScore()
 	}
 
 	@Composable
 	fun GameInterfaceComposable(){
-
-		score = remember { mutableStateOf(0) }
-		playerHasLost = remember { mutableStateOf(false) }
-		movesTaken = remember { mutableStateOf(0) }
-		highestTile = remember { mutableStateOf(1) }
 		val screenHeight = LocalWindowInfo.current.containerSize.height
 		val screenWidth = LocalWindowInfo.current.containerSize.width
 		var tileSize:Dp = 80.dp
@@ -117,6 +113,8 @@ class GameInterface(
 				items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
 			}
 		}
+
+		score.value = getGridScore()
 	}
 
 	/**
@@ -213,22 +211,6 @@ class GameInterface(
 			if(iVal.toInt() != 0) score += powerToBase(iVal)
 		}
 		return score
-	}
-
-	fun getScore(): MutableState<Long> {
-		return this.score
-	}
-
-	fun hasPlayerLost(): MutableState<Boolean> {
-		return this.playerHasLost
-	}
-
-	fun getHighestTile(): MutableState<Byte> {
-		return this.highestTile
-	}
-
-	fun getMovesTaken(): MutableState<Long> {
-		return this.movesTaken
 	}
 
 	fun resetBoard(){

@@ -86,7 +86,7 @@ class GameActivity : AbstractActivity2048(
 			}
 
 			Text(
-				"Score: ${gameInterface.getScore().value}",
+				"Score: ${gameInterface.score.value}",
 				fontSize = 40.sp,
 				color = MaterialTheme.colorScheme.secondary,
 				modifier = Modifier.padding(20.dp)
@@ -107,8 +107,8 @@ class GameActivity : AbstractActivity2048(
 
 		}
 
-		val hasLost = gameInterface.hasPlayerLost().value
-		val highestTile = gameInterface.getHighestTile().value
+		val hasLost = gameInterface.playerHasLost.value
+		val highestTile = gameInterface.highestTile.value
 		LaunchedEffect(hasLost, highestTile) {
 			if (hasLost || highestTile >= winCondition) {
 				showEndDialog.value = true
@@ -146,7 +146,7 @@ class GameActivity : AbstractActivity2048(
 	@Composable
 	private fun EndGameDialog(){
 		val context = LocalContext.current
-		val win = gameInterface.getHighestTile().value >= winCondition
+		val win = gameInterface.highestTile.value >= winCondition
 		AlertDialog(
 			onDismissRequest = { showEndDialog.value = false },
 			title = {
@@ -256,10 +256,10 @@ class GameActivity : AbstractActivity2048(
 		val scoreDao = db.scoreDao()
 		// TODO: Record time in a variable
 		scoreDao.save(
-			gameInterface.getScore().value,
-			gameInterface.getHighestTile().value,
+			gameInterface.score.value,
+			gameInterface.highestTile.value,
 			0,
-			gameInterface.getMovesTaken().value,
+			gameInterface.movesTaken.value,
 			gameInterface.boardWidth,
 			gameInterface.boardHeight
 		)
