@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey
 @Entity
 data class SaveState(
 	@PrimaryKey val id: Int,
-	val board: ByteArray = ByteArray(16),
-	val boardHeight: Int = 4,
-	val boardLength: Int = 4
+	val board: ByteArray,
+	val boardHeight: Int,
+	val boardLength: Int,
+	val movesTaken: Long,
+	val timeTaken: Long
 )

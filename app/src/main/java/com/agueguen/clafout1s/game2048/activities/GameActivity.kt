@@ -79,7 +79,7 @@ class GameActivity : AbstractActivity2048(
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			Row(
-				modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+				modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
 				horizontalArrangement = Arrangement.Center,
 			){
 				gameInterface.GameInterfaceComposable()
@@ -89,17 +89,24 @@ class GameActivity : AbstractActivity2048(
 				"Score: ${gameInterface.score.value}",
 				fontSize = 40.sp,
 				color = MaterialTheme.colorScheme.secondary,
-				modifier = Modifier.padding(20.dp)
+				modifier = Modifier.padding(10.dp)
+			)
+
+			Text(
+				"Time: ${gameInterface.timer.value}",
+				fontSize = 40.sp,
+				color = MaterialTheme.colorScheme.secondary,
+				modifier = Modifier.padding(10.dp)
 			)
 
 			Button(
-				modifier = Modifier.padding(20.dp),
+				modifier = Modifier.padding(10.dp),
 				onClick = {
 					showResetDialog.value = true
 				}
 			){
 				Text(
-					"Reset the game",
+					"Reset",
 					fontFamily = blockyFont,
 					fontSize = 30.sp
 				)
@@ -128,7 +135,9 @@ class GameActivity : AbstractActivity2048(
 							0, // this activity uses saveState slot 0
 							stateListToByteArray(gameInterface.gameBoard.getGameGrid().data),
 							gameInterface.boardHeight,
-							gameInterface.boardWidth
+							gameInterface.boardWidth,
+							gameInterface.movesTaken.value,
+							gameInterface.timer.value
 						))
 					}
 					else -> {}
@@ -219,8 +228,6 @@ class GameActivity : AbstractActivity2048(
 
 	/**
 	 * Dialog choice to save the score, after pressing the reset button.
-	 *
-	 * @param mutableBoolean: The function must be called on an if statement on the value of mutableBoolean, for the AlertDialog to be able to close.
 	 */
 	@Composable
 	private fun SaveScoreDialog(){
