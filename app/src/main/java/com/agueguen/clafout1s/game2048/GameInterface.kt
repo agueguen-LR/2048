@@ -48,6 +48,11 @@ import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
 import kotlin.math.abs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 import com.agueguen.clafout1s.game2048.database.AppDatabase
 import com.agueguen.clafout1s.game2048.database.SaveState
@@ -68,10 +73,14 @@ class GameInterface(
 	val movesTaken = mutableStateOf(0L)
 	val playerHasLost = mutableStateOf(false)
 	val highestTile = mutableStateOf(1.toByte())
+	val timer = mutableStateOf(0L)
+	private var timerJob: Job? = null
 
 	constructor(saveState: SaveState): this(saveState.boardLength, saveState.boardHeight) {
 		gameBoard = GameBoard(saveState)
 		score.value = getGridScore()
+		timer.value = saveState.timeTaken
+		movesTaken.value = saveState.movesTaken
 	}
 
 	@Composable
@@ -115,6 +124,9 @@ class GameInterface(
 		}
 
 		score.value = getGridScore()
+		LaunchedEffect(Unit) {
+			startTimer(this)
+		}
 	}
 
 	/**
@@ -216,6 +228,17 @@ class GameInterface(
 	fun resetBoard(){
 		gameBoard = GameBoard(boardWidth, boardHeight)
 		movesTaken.value = 0
+		timer.value = 0
 		score.value = getGridScore()
+	}
+
+	private fun startTimer(scope: CoroutineScope) {
+		timerJob?.cancel()
+		timerJob = scope.launch {
+			while (isActive) {
+				timer.value += 1
+				delay(1000)
+			}
+		}
 	}
 }
