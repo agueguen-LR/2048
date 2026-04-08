@@ -28,8 +28,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -67,8 +70,9 @@ class GameActivity : AbstractActivity2048(
 				intent.getIntExtra("height", 4)
 			)}
 		}
+		val boardHeight = gameInterface.boardHeight
+		val boardWidth = gameInterface.boardWidth
 
-		// Is always gonna be initialized before the alerts, since this is the only public function
 		buttonColors = ButtonColors(
 			MaterialTheme.colorScheme.primaryContainer,
 			MaterialTheme.colorScheme.primary,
@@ -76,7 +80,7 @@ class GameActivity : AbstractActivity2048(
 			MaterialTheme.colorScheme.error
 		)
 
-		winCondition = when (gameInterface.boardWidth * gameInterface.boardHeight) {
+		winCondition = when (boardWidth * boardHeight) {
 			9 -> 6 // 3*3 goal is 64
 			16 -> 11 // 4*4 goal is 2048
 			25 -> 14 // 5*5 goal is 16384
@@ -119,7 +123,8 @@ class GameActivity : AbstractActivity2048(
 				modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
 				horizontalArrangement = Arrangement.Center,
 			){
-				gameInterface.GameInterfaceComposable()
+				val tileSize = calculateTileSize(boardWidth, boardHeight, 10.dp)
+				gameInterface.GameInterfaceComposable(tileSize, 10.dp)
 			}
 		}
 
@@ -143,8 +148,8 @@ class GameActivity : AbstractActivity2048(
 						saveStateDao.create(SaveState(
 							0, // this activity uses saveState slot 0
 							stateListToByteArray(gameInterface.gameBoard.getGameGrid().data),
-							gameInterface.boardHeight,
-							gameInterface.boardWidth,
+							boardHeight,
+							boardWidth,
 							gameInterface.movesTaken.value,
 							gameInterface.timer.value
 						))
@@ -159,6 +164,61 @@ class GameActivity : AbstractActivity2048(
 				lifecycleOwner.lifecycle.removeObserver(observer)
 			}
 		}
+	}
+
+	@Composable
+	fun calculateTileSize(
+		boardWidth: Int,
+		boardHeight: Int,
+		marginSize: Dp
+	): Dp {
+		val screenHeight = LocalWindowInfo.current.containerSize.height
+		val screenWidth = LocalWindowInfo.current.containerSize.width
+
+		val marginNbX = boardWidth + 3
+		val marginNbY = boardHeight + 3
+
+		var tileSize: Dp = 80.dp
+
+		val density = LocalDensity.current
+
+		val totalWidthPx = with(density) {
+			boardWidth * tileSize.toPx() + marginNbX * marginSize.toPx()
+		}
+
+		val totalHeightPx = with(density) {
+			boardHeight * tileSize.toPx() + marginNbY * marginSize.toPx()
+		}
+
+		tileSize = when {
+			totalWidthPx > screenWidth && totalHeightPx > screenHeight -> {
+				if (totalWidthPx >= totalHeightPx) {
+					with(density) {
+						((screenWidth - marginNbX * marginSize.toPx()) / boardWidth).toDp()
+					}
+				} else {
+					with(density) {
+						((screenHeight - marginNbY * marginSize.toPx()) / boardHeight).toDp()
+					}
+				}
+			}
+
+			totalWidthPx > screenWidth -> {
+				with(density) {
+					((screenWidth - marginNbX * marginSize.toPx()) / boardWidth).toDp()
+				}
+			}
+
+			totalHeightPx > screenHeight -> {
+				with(density) {
+					((screenHeight - marginNbY * marginSize.toPx()) / boardHeight).toDp()
+				}
+			}
+
+			else -> tileSize
+		}
+
+		return tileSize
 	}
 
 	@Composable
@@ -197,7 +257,11 @@ class GameActivity : AbstractActivity2048(
 							showEndDialog.value = false
 						}
 					) {
-						Text("Add to scoreboard",fontFamily = blockyFont, fontWeight = FontWeight.Bold)
+						Text(
+							"Add to scoreboard",
+							fontFamily = blockyFont,
+							fontWeight = FontWeight.Bold
+						)
 					}
 				}
 			},

@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -84,41 +83,7 @@ class GameInterface(
 	}
 
  	@Composable
-	fun GameInterfaceComposable(){
-		val screenHeight = LocalWindowInfo.current.containerSize.height
-		val screenWidth = LocalWindowInfo.current.containerSize.width
-		var tileSize:Dp = 80.dp
-		val marginSize:Dp = 10.dp // Used for space between tiles, padding, and the borders of the grid
-		val marginNbX = boardWidth+3 // nbTiles -1 + 4 padding
-		val marginNbY = boardHeight+3
-
-		val totalWidthPx = with(LocalDensity.current) { boardWidth*tileSize.toPx() + marginNbX*marginSize.toPx()}
-		val totalHeightPx = with(LocalDensity.current) { boardHeight*tileSize.toPx() + marginNbY*marginSize.toPx()}
-		if(totalWidthPx > screenWidth && totalHeightPx > screenHeight){
-			if(totalWidthPx>=totalHeightPx){
-				tileSize = with(LocalDensity.current){((screenWidth-marginNbX*marginSize.toPx())/boardWidth).toDp()}
-			}
-			else{
-				tileSize = with(LocalDensity.current){((screenHeight-marginNbY*marginSize.toPx())/boardHeight).toDp()}
-			}
-		}
-		else if(totalWidthPx > screenWidth){
-			tileSize = with(LocalDensity.current){((screenWidth-marginNbX*marginSize.toPx())/boardWidth).toDp()}
-		}
-		else if(totalHeightPx > screenHeight){
-			tileSize = with(LocalDensity.current){((screenHeight-marginNbY*marginSize.toPx())/boardHeight).toDp()}
-		}
-		Box(modifier = Modifier.padding(marginSize)){
-			LazyHorizontalGrid(
-				rows = GridCells.Fixed(boardWidth),
-				horizontalArrangement = Arrangement.spacedBy(marginSize),
-				verticalArrangement = Arrangement.spacedBy(marginSize),
-				modifier = Modifier
-				.height(tileSize * boardHeight + marginSize * (marginNbY-4))
-			) {
-				items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
-			}
-		}
+	fun GameInterfaceComposable(tileSize: Dp, marginSize: Dp){
 
 		Box(modifier = Modifier.padding(marginSize)){
 			LazyHorizontalGrid(
@@ -126,9 +91,7 @@ class GameInterface(
 				horizontalArrangement = Arrangement.spacedBy(marginSize),
 				verticalArrangement = Arrangement.spacedBy(marginSize),
 				modifier = Modifier
-				.height(tileSize * boardHeight + marginSize * (marginNbY-4))
-				//.background(MaterialTheme.colorScheme.primaryContainer)
-				//.border(BorderStroke(marginSize, MaterialTheme.colorScheme.primaryContainer))
+				.height(tileSize * boardHeight + marginSize * (boardHeight-1))
 			) {
 				items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
 			}
