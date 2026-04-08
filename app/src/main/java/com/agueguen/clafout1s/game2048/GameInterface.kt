@@ -108,6 +108,17 @@ class GameInterface(
 		else if(totalHeightPx > screenHeight){
 			tileSize = with(LocalDensity.current){((screenHeight-marginNbY*marginSize.toPx())/boardHeight).toDp()}
 		}
+		Box(modifier = Modifier.padding(marginSize)){
+			LazyHorizontalGrid(
+				rows = GridCells.Fixed(boardWidth),
+				horizontalArrangement = Arrangement.spacedBy(marginSize),
+				verticalArrangement = Arrangement.spacedBy(marginSize),
+				modifier = Modifier
+				.height(tileSize * boardHeight + marginSize * (marginNbY-4))
+			) {
+				items(boardWidth*boardHeight){ i -> Tile(i, tileSize) }
+			}
+		}
 
 		Box(modifier = Modifier.padding(marginSize)){
 			LazyHorizontalGrid(
@@ -146,7 +157,7 @@ class GameInterface(
 			contentAlignment = Alignment.Center,
 			modifier = Modifier
 			//.border(BorderStroke(2.dp, MaterialTheme.colorScheme.primary))
-			.background(MaterialTheme.colorScheme.onPrimaryContainer)
+			.background(MaterialTheme.colorScheme.secondaryContainer)
 			.width(tileSize)
 			.height(tileSize)
 			.pointerInput(Unit) {
@@ -175,7 +186,7 @@ class GameInterface(
 				fontSize = with(LocalDensity.current) { (tileSize/max(textValue.length,2)).toSp() },
 				fontFamily = blockyFont,
 				fontWeight = FontWeight.Bold,
-				color = MaterialTheme.colorScheme.primary
+				color = MaterialTheme.colorScheme.secondary
 			)
 		}
 	}

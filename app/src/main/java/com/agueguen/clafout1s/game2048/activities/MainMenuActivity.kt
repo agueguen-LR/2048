@@ -40,9 +40,21 @@ import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
 
 class MainMenuActivity : AbstractActivity2048() {
 	private lateinit var showGridSizeDialog: MutableState<Boolean>
+	private lateinit var buttonColors: ButtonColors
+
+	@Composable
+	fun InitColors(){
+		buttonColors = ButtonColors(
+			MaterialTheme.colorScheme.primaryContainer,
+			MaterialTheme.colorScheme.primary,
+			MaterialTheme.colorScheme.errorContainer,
+			MaterialTheme.colorScheme.error
+		)
+	}
 
 	@Composable
 	override fun ScreenContent(){
+		InitColors()
 		showGridSizeDialog = remember { mutableStateOf(false) }
 		val context = LocalContext.current
 		val gameActivityIntent = Intent(context, GameActivity::class.java)
@@ -51,28 +63,25 @@ class MainMenuActivity : AbstractActivity2048() {
 		val continueSaveState = database.saveStateDao().getAsFlow(0).collectAsState(initial = null)
 
 		Column (
-			modifier = Modifier.background(MaterialTheme.colorScheme.surface).fillMaxSize(),
+			modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize(),
 			verticalArrangement = Arrangement.SpaceEvenly
 		) {
 			Text(
 				text = "2048",
-				fontSize = 60.sp,
+				fontSize = 70.sp,
 				fontFamily = blockyFont,
 				fontWeight = FontWeight.Bold,
 				style = TextStyle(
 					brush = Brush.linearGradient(
-						listOf(
-							MaterialTheme.colorScheme.primary,
-							MaterialTheme.colorScheme.inversePrimary
-						)
+						listOf(MaterialTheme.colorScheme.onTertiary ,MaterialTheme.colorScheme.tertiary)
 					)
 				),
-				modifier = Modifier.padding(15.dp).fillMaxWidth()
-				.weight(1F).wrapContentHeight(align= Alignment.CenterVertically),
+				modifier = Modifier.padding(15.dp).fillMaxWidth(),
 				textAlign = TextAlign.Center,
 			)
 
-			Column(verticalArrangement = Arrangement.SpaceEvenly,
+			Column(
+				verticalArrangement = Arrangement.SpaceEvenly,
 				modifier = Modifier.weight(2F)
 			) {
 				if (continueSaveState.value != null) {
@@ -102,7 +111,9 @@ class MainMenuActivity : AbstractActivity2048() {
 			}
 			Column(modifier = Modifier.weight(0.5F)) { }
 
-			if (showGridSizeDialog.value) gridSizeDialog(context, gameActivityIntent)
+			if (showGridSizeDialog.value) {
+				gridSizeDialog(context, gameActivityIntent)
+			}
 		}
 	}
 
@@ -125,7 +136,7 @@ class MainMenuActivity : AbstractActivity2048() {
 	}
 
 	@Composable
-	private fun gridSizeDialog(context: Context, intent: Intent) {
+	private fun GridSizeDialog(context: Context, intent: Intent) {
 		Dialog(
 			onDismissRequest = {
 				showGridSizeDialog.value = false
@@ -136,7 +147,7 @@ class MainMenuActivity : AbstractActivity2048() {
 				.fillMaxWidth()
 				.height(300.dp)
 				.padding(12.dp),
-				shape = RoundedCornerShape(16.dp),
+				shape = RoundedCornerShape(16.dp)
 			) {
 				Column(
 					modifier = Modifier.fillMaxSize(),
@@ -148,25 +159,27 @@ class MainMenuActivity : AbstractActivity2048() {
 						textAlign = TextAlign.Center
 					)
 					Spacer(modifier = Modifier.height(16.dp))
-					gridSizeButton(3, context, intent)
-					gridSizeButton(4, context, intent)
-					gridSizeButton(5, context, intent)
-					gridSizeButton(6, context, intent)
+					GridSizeButton(3, context, intent)
+					GridSizeButton(4, context, intent)
+					GridSizeButton(5, context, intent)
+					GridSizeButton(6, context, intent)
 				}
 			}
 		}
 	}
 
 	@Composable
-	private fun gridSizeButton(size: Int, context: Context, intent: Intent) {
-		Button(onClick = {
-			intent.putExtra("width", size)
-			intent.putExtra("height", size)
-			showGridSizeDialog.value = false
-			context.startActivity(intent)
-		}) {
+	private fun GridSizeButton(size: Int, context: Context, intent: Intent) {
+		Button(
+			colors = buttonColors,
+			onClick = {
+				intent.putExtra("width", size)
+				intent.putExtra("height", size)
+				showGridSizeDialog.value = false
+				context.startActivity(intent)
+			}
+		) {
 			Text("${size}x${size}")
 		}
 	}
 }
-

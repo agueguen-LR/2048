@@ -59,9 +59,15 @@ class SettingsActivity : AbstractActivity2048() {
 		.fillMaxWidth()
 		.height(40.dp)
 
+        val buttonColors = ButtonColors(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.error)
+
 		Column(
 			modifier = Modifier
-			.background(MaterialTheme.colorScheme.surface)
+			.background(MaterialTheme.colorScheme.background)
 			.fillMaxSize(),
 			verticalArrangement = Arrangement.SpaceEvenly
 		) {
@@ -74,7 +80,8 @@ class SettingsActivity : AbstractActivity2048() {
 				.fillMaxWidth()
 				.weight(1f)
 				.wrapContentHeight(align = Alignment.CenterVertically),
-				textAlign = TextAlign.Center
+				textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimary
 			)
 
 			Column(
@@ -83,6 +90,7 @@ class SettingsActivity : AbstractActivity2048() {
 			) {
 				// Animations toggle
 				Button(
+                    colors = buttonColors,
 					onClick = {
 						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(animations = !userSettings.animations)
@@ -100,6 +108,7 @@ class SettingsActivity : AbstractActivity2048() {
 
 				// Music toggle
 				Button(
+                    colors = buttonColors,
 					onClick = {
 						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(music = !userSettings.music)
@@ -117,6 +126,7 @@ class SettingsActivity : AbstractActivity2048() {
 
 				// Sound FX toggle
 				Button(
+                    colors = buttonColors,
 					onClick = {
 						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(soundFX = !userSettings.soundFX)
@@ -134,6 +144,7 @@ class SettingsActivity : AbstractActivity2048() {
 
 				// Optional features toggle
 				Button(
+                    colors = buttonColors,
 					onClick = {
 						AudioManager.playSound(context, R.raw.click)
 						val updated = userSettings.copy(optionalFeatures = !userSettings.optionalFeatures)
@@ -160,7 +171,7 @@ class SettingsActivity : AbstractActivity2048() {
 	@Composable
 	fun ThemePicker(context: Context, userSettingsState: MutableState<UserSettings?>) {
 		val userSettings = userSettingsState.value!!
-		val outlineColor = MaterialTheme.colorScheme.secondary
+		val outlineColor = MaterialTheme.colorScheme.onPrimary
 
 		val themes = listOf(
 			lightScheme.primary to lightScheme.background,

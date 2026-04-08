@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.CardColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -65,7 +66,7 @@ class ScoreboardActivity : AbstractActivity2048(
 					Row(horizontalArrangement = Arrangement.Center, modifier = Modifier
 					.fillMaxWidth()
 					.padding(20.dp)){
-						Text("Scoreboard", color = MaterialTheme.colorScheme.secondary, fontSize = 30.sp)
+						Text("Scoreboard", color = MaterialTheme.colorScheme.onPrimary, fontSize = 30.sp)
 					}
 				}
 				items(allScores.value) { score ->
@@ -114,6 +115,12 @@ class ScoreboardActivity : AbstractActivity2048(
 	@Composable
 	private fun ScoreCard(score: Score) {
 		Card(
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                disabledContentColor = MaterialTheme.colorScheme.error
+            ),
 			modifier = Modifier
 			.fillMaxWidth()
 			.padding(vertical = 6.dp)
