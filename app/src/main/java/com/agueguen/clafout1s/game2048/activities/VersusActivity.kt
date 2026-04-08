@@ -2,10 +2,8 @@ package com.agueguen.clafout1s.game2048.activities
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -26,9 +22,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -37,19 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.Lifecycle
 
 import com.agueguen.clafout1s.game2048.GameInterface
-import com.agueguen.clafout1s.game2048.database.AppDatabase
-import com.agueguen.clafout1s.game2048.database.SaveState
 import com.agueguen.clafout1s.game2048.ui.theme.AppTheme
 import com.agueguen.clafout1s.game2048.ui.theme.blockyFont
-import com.agueguen.clafout1s.game2048.utilities.stateListToByteArray
-import com.agueguen.clafout1s.game2048.AudioManager
-import com.agueguen.clafout1s.game2048.R
 
 class VersusActivity : AbstractActivity2048(
 	modifier = Modifier.fillMaxSize().focusable().padding(top = 40.dp, bottom = 50.dp)
@@ -59,16 +46,16 @@ class VersusActivity : AbstractActivity2048(
 	private lateinit var buttonColors: ButtonColors
 	private lateinit var showLoseDialog: MutableState<Boolean>
 	private lateinit var showTimeUpDialog: MutableState<Boolean>
+	private lateinit var show2048Dialog: MutableState<Boolean>
 
 	@Composable
 	override fun ScreenContent(){
-		val context = LocalContext.current
-		
 		val tileSize = calculateTileSize(4, 4, 10.dp)
 		player1 = remember { GameInterface(4, 4) }
 		player2 = remember { GameInterface(4, 4) }
 		showLoseDialog = remember { mutableStateOf(false) }
 		showTimeUpDialog = remember { mutableStateOf(false) }
+		show2048Dialog = remember { mutableStateOf(false) }
 
 		buttonColors = ButtonColors(
 			MaterialTheme.colorScheme.primaryContainer,
@@ -125,11 +112,19 @@ class VersusActivity : AbstractActivity2048(
 
 		if (showTimeUpDialog.value) {
 			TimeUpDialog()
+		} else {
+			_2048Dialog()
 		}
 		if (intent.getBooleanExtra("timer", false)) {
 			LaunchedEffect(player1.timer.value) {
 				if (180 - player1.timer.value <= 0) {
 					showTimeUpDialog.value = true
+				}
+			}
+		} else {
+			LaunchedEffect(player1.score.value, player2.score.value) {
+				if (player1.highestTile.value >= 11 || player2.highestTile.value >= 11) {
+					show2048Dialog.value = true
 				}
 			}
 		}
@@ -260,7 +255,7 @@ class VersusActivity : AbstractActivity2048(
 					onClick = {
 						player1.resetBoard()
 						player2.resetBoard()
-						showLoseDialog.value = false
+						showTimeUpDialog.value = false
 					}
 				) {
 					Text(
@@ -274,7 +269,56 @@ class VersusActivity : AbstractActivity2048(
 				Button(
 					colors = buttonColors,
 					onClick = {
-						showLoseDialog.value = false
+						showTimeUpDialog.value = false
+						context.startActivity(Intent(context, MainMenuActivity::class.java))
+					}
+				) {
+					Text(
+						"Main Menu",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			}
+		)
+	}
+
+	@Composable
+	private fun _2048Dialog(){
+		val context = LocalContext.current
+		AlertDialog(
+			onDismissRequest = { show2048Dialog.value = false },
+			title = {
+				Text("2048 reached !")
+			},
+			text = {
+				if (player1.highestTile.value >= 11) {
+					Text("Player 1 wins by reaching 2048 with ${player1.score.value} points !")
+				}else {
+					Text("Player 2 wins by reaching 2048 with ${player2.score.value} points !")
+				}
+			},
+			confirmButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						player1.resetBoard()
+						player2.resetBoard()
+						show2048Dialog.value = false
+					}
+				) {
+					Text(
+						"New Game",
+						fontFamily = blockyFont,
+						fontWeight = FontWeight.Bold
+					)
+				}
+			},
+			dismissButton = {
+				Button(
+					colors = buttonColors,
+					onClick = {
+						show2048Dialog.value = false
 						context.startActivity(Intent(context, MainMenuActivity::class.java))
 					}
 				) {
